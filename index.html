@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الوثائق الإدارية الجزائرية</title>
+    <style>
+        /* التصميم الأساسي */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c5aa0;
+            --primary-light: #4a76c8;
+            --secondary: #d4af37;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* الترويسة */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header-title {
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .blessing {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+        
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .language-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* الإعلانات */
+        .ad-container {
+            background-color: #e9ecef;
+            border: 1px dashed var(--gray);
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            color: var(--gray);
+        }
+        
+        /* التنقل */
+        nav {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .nav-item {
+            padding: 10px 15px;
+            white-space: nowrap;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .nav-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* المحتوى الرئيسي */
+        main {
+            padding: 30px 0;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        /* بطاقات الوثائق */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .document-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+        }
+        
+        .document-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .document-body {
+            padding: 15px;
+        }
+        
+        .document-info {
+            margin-bottom: 10px;
+        }
+        
+        .document-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* أدوات التوليد */
+        .generator-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        /* معاينة الوثيقة */
+        .preview-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .preview-container.active {
+            display: block;
+        }
+        
+        .document-preview {
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            min-height: 400px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        /* التذييل */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #495057;
+            color: #adb5bd;
+        }
+        
+        /* التجاوبية */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .language-switcher {
+                margin-top: 15px;
+            }
+            
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        /* طباعة */
+        @media print {
+            header, nav, .ad-container, .generator-container, footer, .btn-group {
+                display: none !important;
+            }
+            
+            .preview-container {
+                display: block !important;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .document-preview {
+                border: none;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الترويسة -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-title">
+                    <div class="blessing">اللهم صلي وسلم على سيدنا محمد</div>
+                    <h1 class="app-title">الوثائق الإدارية الجزائرية</h1>
+                </div>
+                <div class="language-switcher">
+                    <button class="lang-btn" onclick="switchLanguage('ar')">العربية</button>
+                    <button class="lang-btn" onclick="switchLanguage('fr')">Français</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- مساحة الإعلانات -->
+    <div class="container">
+        <div class="ad-container">
+            مساحة إعلانات AdMob
+        </div>
+    </div>
+    
+    <!-- التنقل -->
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <div class="nav-item active" data-section="home">الرئيسية</div>
+                <div class="nav-item" data-section="civil-status">الحالة المدنية</div>
+                <div class="nav-item" data-section="social-security">الضمان الاجتماعي</div>
+                <div class="nav-item" data-section="employment">العمل والتوظيف</div>
+                <div class="nav-item" data-section="housing">السكن</div>
+                <div class="nav-item" data-section="transport">السيارة والنقل</div>
+                <div class="nav-item" data-section="justice">العدالة</div>
+                <div class="nav-item" data-section="commerce">التجارة والسجل التجاري</div>
+                <div class="nav-item" data-section="declaration">مولد التصريح الشرفي</div>
+                <div class="nav-item" data-section="request">مولد الطلب الخطي</div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- المحتوى الرئيسي -->
+    <main class="container">
+        <!-- الصفحة الرئيسية -->
+        <section id="home" class="section active">
+            <h2 class="section-title">مرحباً بك في تطبيق الوثائق الإدارية الجزائرية</h2>
+            <p>هذا التطبيق يوفر لك معلومات شاملة عن جميع الوثائق الإدارية التي قد تحتاجها في حياتك اليومية في الجزائر، مع إمكانية توليد نماذج جاهزة للطباعة.</p>
+            
+            <div class="documents-grid">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- الحالة المدنية -->
+        <section id="civil-status" class="section">
+            <h2 class="section-title">وثائق الحالة المدنية</h2>
+            <div class="documents-grid" id="civil-status-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- الضمان الاجتماعي -->
+        <section id="social-security" class="section">
+            <h2 class="section-title">وثائق الضمان الاجتماعي</h2>
+            <div class="documents-grid" id="social-security-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- العمل والتوظيف -->
+        <section id="employment" class="section">
+            <h2 class="section-title">وثائق العمل والتوظيف</h2>
+            <div class="documents-grid" id="employment-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- السكن -->
+        <section id="housing" class="section">
+            <h2 class="section-title">وثائق السكن</h2>
+            <div class="documents-grid" id="housing-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- السيارة والنقل -->
+        <section id="transport" class="section">
+            <h2 class="section-title">وثائق السيارة والنقل</h2>
+            <div class="documents-grid" id="transport-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- العدالة -->
+        <section id="justice" class="section">
+            <h2 class="section-title">وثائق العدالة</h2>
+            <div class="documents-grid" id="justice-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- التجارة والسجل التجاري -->
+        <section id="commerce" class="section">
+            <h2 class="section-title">وثائق التجارة والسجل التجاري</h2>
+            <div class="documents-grid" id="commerce-docs">
+                <!-- سيتم ملء هذه البطاقات بالبيانات عبر JavaScript -->
+            </div>
+        </section>
+        
+        <!-- مولد التصريح الشرفي -->
+        <section id="declaration" class="section">
+            <h2 class="section-title">مولد التصريح الشرفي</h2>
+            
+            <div class="generator-container">
+                <div class="form-group">
+                    <label for="declaration-name">الاسم</label>
+                    <input type="text" id="declaration-name" placeholder="أدخل اسمك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="declaration-surname">اللقب</label>
+                    <input type="text" id="declaration-surname" placeholder="أدخل لقبك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="declaration-address">العنوان</label>
+                    <input type="text" id="declaration-address" placeholder="أدخل عنوانك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="declaration-text">نص التصريح</label>
+                    <textarea id="declaration-text" placeholder="أدخل نص التصريح الشرفي"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="declaration-template">اختر قالب الوثيقة</label>
+                    <select id="declaration-template">
+                        <option value="template1">قالب بسيط</option>
+                        <option value="template2">قالب رسمي</option>
+                        <option value="template3">قالب مزخرف</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateDeclaration()">توليد التصريح</button>
+                    <button class="btn btn-secondary" onclick="resetDeclarationForm()">إعادة تعيين</button>
+                    <button class="btn btn-success" onclick="saveDeclaration()">حفظ</button>
+                </div>
+            </div>
+            
+            <div class="preview-container" id="declaration-preview">
+                <h3>معاينة التصريح الشرفي</h3>
+                <div class="document-preview" id="declaration-output"></div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="printDocument('declaration-output')">طباعة</button>
+                    <button class="btn btn-success" onclick="exportToPDF('declaration-output')">تحميل PDF</button>
+                    <button class="btn btn-success" onclick="exportToWord('declaration-output')">تحميل Word</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- مولد الطلب الخطي -->
+        <section id="request" class="section">
+            <h2 class="section-title">مولد الطلب الخطي</h2>
+            
+            <div class="generator-container">
+                <div class="form-group">
+                    <label for="request-name">الاسم</label>
+                    <input type="text" id="request-name" placeholder="أدخل اسمك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="request-surname">اللقب</label>
+                    <input type="text" id="request-surname" placeholder="أدخل لقبك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="request-address">العنوان</label>
+                    <input type="text" id="request-address" placeholder="أدخل عنوانك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="request-recipient">الجهة الموجه إليها الطلب</label>
+                    <input type="text" id="request-recipient" placeholder="أدخل اسم الجهة">
+                </div>
+                
+                <div class="form-group">
+                    <label for="request-subject">موضوع الطلب</label>
+                    <input type="text" id="request-subject" placeholder="أدخل موضوع الطلب">
+                </div>
+                
+                <div class="form-group">
+                    <label for="request-text">نص الطلب</label>
+                    <textarea id="request-text" placeholder="أدخل نص الطلب"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="request-template">اختر قالب الوثيقة</label>
+                    <select id="request-template">
+                        <option value="template1">قالب بسيط</option>
+                        <option value="template2">قالب رسمي</option>
+                        <option value="template3">قالب مزخرف</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateRequest()">توليد الطلب</button>
+                    <button class="btn btn-secondary" onclick="resetRequestForm()">إعادة تعيين</button>
+                    <button class="btn btn-success" onclick="saveRequest()">حفظ</button>
+                </div>
+            </div>
+            
+            <div class="preview-container" id="request-preview">
+                <h3>معاينة الطلب الخطي</h3>
+                <div class="document-preview" id="request-output"></div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="printDocument('request-output')">طباعة</button>
+                    <button class="btn btn-success" onclick="exportToPDF('request-output')">تحميل PDF</button>
+                    <button class="btn btn-success" onclick="exportToWord('request-output')">تحميل Word</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- التذييل -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">عن التطبيق</h3>
+                    <p>تطبيق الوثائق الإدارية الجزائرية يوفر معلومات شاملة عن الوثائق الرسمية مع إمكانية توليد نماذج جاهزة للاستخدام.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-section="home">الرئيسية</a></li>
+                        <li><a href="#" data-section="declaration">مولد التصريح الشرفي</a></li>
+                        <li><a href="#" data-section="request">مولد الطلب الخطي</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">معلومات قانونية</h3>
+                    <p>هذا التطبيق يوفر معلومات عامة فقط ولا يقدم نماذج رسمية أو شعارات الدولة. يرجى الرجوع إلى المصادر الرسمية للتأكد من صحة المعلومات.</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 تطبيق الوثائق الإدارية الجزائرية. جميع الحقوق محفوظة.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // بيانات الوثائق
+        const documentsData = {
+            "civil-status": [
+                {
+                    title: "شهادة الميلاد",
+                    description: "وثيقة تثبت تاريخ ومكان ميلاد الشخص",
+                    required: "بطاقة الهوية، معلومات الوالدين",
+                    cost: "مجانية",
+                    duration: "فوري أو 24 ساعة",
+                    location: "بلدية مكان الميلاد"
+                },
+                {
+                    title: "شهادة الجنسية",
+                    description: "وثيقة تثبت جنسية الشخص الجزائرية",
+                    required: "بطاقة الهوية، شهادة الميلاد",
+                    cost: "مجانية",
+                    duration: "من 3 إلى 7 أيام",
+                    location: "البلدية أو السفارة الجزائرية"
+                },
+                {
+                    title: "شهادة الإقامة",
+                    description: "وثيقة تثبت عنوان سكن الشخص",
+                    required: "بطاقة الهوية، عقد الإيجار أو فاتورة كهرباء",
+                    cost: "مجانية",
+                    duration: "فوري",
+                    location: "البلدية"
+                },
+                {
+                    title: "بطاقة التعريف الوطنية",
+                    description: "وثيقة هوية رسمية تثبت هوية الشخص",
+                    required: "شهادة الميلاد، صور شمسية، بصمات الأصابع",
+                    cost: "1000 دينار",
+                    duration: "30 يوم",
+                    location: "البلدية"
+                },
+                {
+                    title: "جواز السفر",
+                    description: "وثيقة سفر تسمح بالسفر إلى الخارج",
+                    required: "بطاقة الهوية، شهادة الميلاد، صور شمسية",
+                    cost: "4000 دينار",
+                    duration: "15 إلى 30 يوم",
+                    location: "البلدية أو مديرية الأمن الوطني"
+                }
+            ],
+            "social-security": [
+                {
+                    title: "بطاقة الضمان الاجتماعي",
+                    description: "وثيقة تثبت انتماء الشخص لنظام الضمان الاجتماعي",
+                    required: "بطاقة الهوية، عقد العمل، استمارة التسجيل",
+                    cost: "مجانية",
+                    duration: "15 يوم",
+                    location: "صناديق الضمان الاجتماعي"
+                },
+                {
+                    title: "شهادة الخدمات",
+                    description: "وثيقة تثبت الخدمات المقدمة من الضمان الاجتماعي",
+                    required: "بطاقة الضمان الاجتماعي، بطاقة الهوية",
+                    cost: "مجانية",
+                    duration: "3 إلى 7 أيام",
+                    location: "صناديق الضمان الاجتماعي"
+                },
+                {
+                    title: "شهادة التسجيل",
+                    description: "وثيقة تثبت تسجيل المؤسسة في الضمان الاجتماعي",
+                    required: "السجل التجاري، بطاقة التعريف للمسؤول",
+                    cost: "مجانية",
+                    duration: "15 يوم",
+                    location: "صناديق الضمان الاجتماعي"
+                }
+            ],
+            "employment": [
+                {
+                    title: "عقد العمل",
+                    description: "وثيقة تنظم العلاقة بين العامل وصاحب العمل",
+                    required: "بطاقة الهوية، الشهادات العلمية، صور شمسية",
+                    cost: "مجانية",
+                    duration: "فوري",
+                    location: "صاحب العمل"
+                },
+                {
+                    title: "شهادة العمل",
+                    description: "وثيقة تثبت فترة العمل والمهمة المنفذة",
+                    required: "بطاقة الهوية",
+                    cost: "مجانية",
+                    duration: "3 أيام",
+                    location: "صاحب العمل"
+                },
+                {
+                    title: "طلب التوظيف",
+                    description: "وثيقة للتقدم لوظيفة في القطاع العام أو الخاص",
+                    required: "السيرة الذاتية، الشهادات، صور شمسية",
+                    cost: "مجانية",
+                    duration: "يختلف حسب الجهة",
+                    location: "الجهة المعنية بالتوظيف"
+                }
+            ],
+            "housing": [
+                {
+                    title: "عقد الإيجار",
+                    description: "وثيقة تنظم علاقة الإيجار بين المالك والمستأجر",
+                    required: "بطاقة الهوية، عقد الملكية (للمالك)",
+                    cost: "مجانية أو رسوم التوثيق",
+                    duration: "فوري",
+                    location: "الوكالة العقارية أو كاتب العدل"
+                },
+                {
+                    title: "شهادة الملكية",
+                    description: "وثيقة تثبت ملكية العقار",
+                    required: "عقد البيع، شهادة التسجيل",
+                    cost: "رسوم التسجيل",
+                    duration: "30 يوم",
+                    location: "مصلحة التسجيل العقاري"
+                },
+                {
+                    title: "رخصة البناء",
+                    description: "وثيقة تسمح ببناء أو ترميم عقار",
+                    required: "شهادة الملكية، مخططات البناء",
+                    cost: "تختلف حسب المساحة",
+                    duration: "60 إلى 90 يوم",
+                    location: "البلدية"
+                }
+            ],
+            "transport": [
+                {
+                    title: "رخصة السياقة",
+                    description: "وثيقة تسمح بقيادة المركبات",
+                    required: "بطاقة الهوية، فحص طبي، صور شمسية",
+                    cost: "8000 إلى 12000 دينار",
+                    duration: "30 إلى 60 يوم",
+                    location: "مديرية النقل"
+                },
+                {
+                    title: "رخصة تسيير المركبة",
+                    description: "وثيقة تثبت تسجيل المركبة قانونياً",
+                    required: "فاتورة الشراء، شهادة المنشأ، بطاقة الهوية",
+                    cost: "تختلف حسب نوع المركبة",
+                    duration: "15 يوم",
+                    location: "مديرية النقل"
+                },
+                {
+                    title: "شهادة الفحص التقني",
+                    description: "وثيقة تثبت صلاحية المركبة للاستعمال",
+                    required: "رخصة التسير، بطاقة الهوية",
+                    cost: "1500 دينار",
+                    duration: "فوري",
+                    location: "مراكز الفحص التقني"
+                }
+            ],
+            "justice": [
+                {
+                    title: "شهادة السوابق العدلية",
+                    description: "وثيقة تثبت السجل العدلي للشخص",
+                    required: "بطاقة الهوية",
+                    cost: "500 دينار",
+                    duration: "3 إلى 7 أيام",
+                    location: "محكمة المكان"
+                },
+                {
+                    title: "وكالة عدلية",
+                    description: "وثيقة تمنح صلاحية لشخص للتصرف نيابة عن آخر",
+                    required: "بطاقة الهوية للطرفين",
+                    cost: "تختلف حسب نوع الوكالة",
+                    duration: "فوري",
+                    location: "كاتب العدل"
+                },
+                {
+                    title: "عقد زواج",
+                    description: "وثيقة تثبت عقد الزواج رسمياً",
+                    required: "بطاقة الهوية، شهادة الميلاد، شهادة الإقامة",
+                    cost: "مجانية",
+                    duration: "فوري",
+                    location: "كاتب العدل أو البلدية"
+                }
+            ],
+            "commerce": [
+                {
+                    title: "السجل التجاري",
+                    description: "وثيقة تثبت تسجيل المؤسسة تجارياً",
+                    required: "بطاقة الهوية، عقد الملكية أو الإيجار، صور شمسية",
+                    cost: "5000 إلى 15000 دينار",
+                    duration: "15 إلى 30 يوم",
+                    location: "مركز السجل التجاري"
+                },
+                {
+                    title: "البطاقة الضريبية",
+                    description: "وثيقة تثبت تسجيل المؤسسة ضريبياً",
+                    required: "السجل التجاري، بطاقة الهوية",
+                    cost: "مجانية",
+                    duration: "7 أيام",
+                    location: "مصلحة الضرائب"
+                },
+                {
+                    title: "رخصة النشاط",
+                    description: "وثيقة تسمح بممارسة نشاط تجاري معين",
+                    required: "السجل التجاري، البطاقة الضريبية",
+                    cost: "تختلف حسب النشاط",
+                    duration: "30 يوم",
+                    location: "البلدية"
+                }
+            ]
+        };
+
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحميل بيانات الوثائق
+            loadDocuments();
+            
+            // إعداد التنقل
+            setupNavigation();
+            
+            // تعيين اللغة الافتراضية
+            setLanguage('ar');
+        });
+
+        // تحميل بيانات الوثائق
+        function loadDocuments() {
+            for (const category in documentsData) {
+                const container = document.getElementById(`${category}-docs`) || document.querySelector('.documents-grid');
+                const documents = documentsData[category];
+                
+                documents.forEach(doc => {
+                    const card = createDocumentCard(doc);
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // إنشاء بطاقة وثيقة
+        function createDocumentCard(doc) {
+            const card = document.createElement('div');
+            card.className = 'document-card';
+            
+            card.innerHTML = `
+                <div class="document-header">
+                    <h3 class="document-title">${doc.title}</h3>
+                </div>
+                <div class="document-body">
+                    <p>${doc.description}</p>
+                    <div class="document-info">
+                        <span class="document-label">الملفات المطلوبة:</span> ${doc.required}
+                    </div>
+                    <div class="document-info">
+                        <span class="document-label">التكلفة:</span> ${doc.cost}
+                    </div>
+                    <div class="document-info">
+                        <span class="document-label">المدة:</span> ${doc.duration}
+                    </div>
+                    <div class="document-info">
+                        <span class="document-label">مكان الإيداع:</span> ${doc.location}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // إعداد التنقل
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // إزالة النشاط من جميع العناصر
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // إضافة النشاط للعنصر المحدد
+                    this.classList.add('active');
+                    const sectionId = this.getAttribute('data-section');
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+            
+            // إعداد روابط التذييل
+            const footerLinks = document.querySelectorAll('.footer-links a');
+            footerLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('data-section');
+                    
+                    // إزالة النشاط من جميع العناصر
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // إضافة النشاط للعنصر المحدد
+                    document.querySelector(`.nav-item[data-section="${sectionId}"]`).classList.add('active');
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+        }
+
+        // تبديل اللغة
+        function switchLanguage(lang) {
+            setLanguage(lang);
+        }
+
+        // تعيين اللغة
+        function setLanguage(lang) {
+            // هذا مثال بسيط، في تطبيق حقيقي ستحتاج إلى ترجمة جميع النصوص
+            if (lang === 'fr') {
+                document.querySelector('.blessing').textContent = 'Que la paix et la bénédiction soient sur notre Prophète Mohammed';
+                document.querySelector('.app-title').textContent = 'Documents Administratifs Algériens';
+                document.querySelector('h2').textContent = 'Bienvenue dans l\'application des documents administratifs algériens';
+            } else {
+                document.querySelector('.blessing').textContent = 'اللهم صلي وسلم على سيدنا محمد';
+                document.querySelector('.app-title').textContent = 'الوثائق الإدارية الجزائرية';
+                document.querySelector('h2').textContent = 'مرحباً بك في تطبيق الوثائق الإدارية الجزائرية';
+            }
+        }
+
+        // توليد التصريح الشرفي
+        function generateDeclaration() {
+            const name = document.getElementById('declaration-name').value;
+            const surname = document.getElementById('declaration-surname').value;
+            const address = document.getElementById('declaration-address').value;
+            const text = document.getElementById('declaration-text').value;
+            const template = document.getElementById('declaration-template').value;
+            
+            if (!name || !surname || !address || !text) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const output = document.getElementById('declaration-output');
+            let declarationHTML = '';
+            
+            // تطبيق القالب المختار
+            switch(template) {
+                case 'template1':
+                    declarationHTML = `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="color: #2c5aa0;">تصريح شرفي</h2>
+                        </div>
+                        <p>أنا الموقع(ة) أدناه:</p>
+                        <p><strong>الاسم:</strong> ${name}</p>
+                        <p><strong>اللقب:</strong> ${surname}</p>
+                        <p><strong>المقيم(ة) في:</strong> ${address}</p>
+                        <p>أصرح شرفياً بأن:</p>
+                        <div style="border: 1px solid #ccc; padding: 15px; margin: 15px 0; background: #f9f9f9;">
+                            ${text}
+                        </div>
+                        <p>وأتعهد بتحمل كافة المسؤوليات القانونية في حالة ثبوت عكس ما ورد أعلاه.</p>
+                        <div style="margin-top: 50px; text-align: left;">
+                            <p>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                            <p>التوقيع: _________________</p>
+                        </div>
+                    `;
+                    break;
+                case 'template2':
+                    declarationHTML = `
+                        <div style="border: 2px solid #2c5aa0; padding: 20px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <h2 style="color: #2c5aa0; border-bottom: 1px solid #2c5aa0; padding-bottom: 10px;">تصريح شرفي</h2>
+                            </div>
+                            <p>أنا الموقع(ة) أدناه:</p>
+                            <table style="width: 100%; margin: 10px 0;">
+                                <tr>
+                                    <td style="width: 30%;"><strong>الاسم:</strong></td>
+                                    <td>${name}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>اللقب:</strong></td>
+                                    <td>${surname}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>العنوان:</strong></td>
+                                    <td>${address}</td>
+                                </tr>
+                            </table>
+                            <p>أصرح شرفياً ومعلناً مسؤوليتي الكاملة أمام الجهات المختصة بما يلي:</p>
+                            <div style="border: 1px solid #ddd; padding: 15px; margin: 15px 0; background: #f5f5f5;">
+                                ${text}
+                            </div>
+                            <p>وأقر بأن جميع المعلومات المذكورة أعلاه صحيحة، وأتحمل المسؤولية القانونية في حالة مخالفة ذلك.</p>
+                            <div style="margin-top: 60px; display: flex; justify-content: space-between;">
+                                <div>
+                                    <p>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                                </div>
+                                <div>
+                                    <p>التوقيع: _________________</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'template3':
+                    declarationHTML = `
+                        <div style="border: 2px solid #d4af37; padding: 25px; background: linear-gradient(to bottom, #fff, #f9f9f9);">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <h2 style="color: #d4af37; font-size: 24px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">تصريح شرفي</h2>
+                                <div style="height: 2px; background: linear-gradient(to right, transparent, #d4af37, transparent); margin: 10px 0;"></div>
+                            </div>
+                            <p style="font-size: 16px;">أنا الموقع(ة) أدناه:</p>
+                            <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                                <p><strong>الاسم:</strong> ${name}</p>
+                                <p><strong>اللقب:</strong> ${surname}</p>
+                                <p><strong>العنوان:</strong> ${address}</p>
+                            </div>
+                            <p style="font-size: 16px;">أصرح شرفياً بما يلي:</p>
+                            <div style="border-left: 3px solid #d4af37; padding: 15px; margin: 15px 0; background: #f9f9f9; font-style: italic;">
+                                ${text}
+                            </div>
+                            <p style="font-size: 16px;">وأتعهد بصحة المعلومات المذكورة أعلاه وأتحمل المسؤولية القانونية في حالة ثبوت عكس ذلك.</p>
+                            <div style="margin-top: 80px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <p>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <p>التوقيع</p>
+                                    <div style="border-top: 1px solid #000; width: 200px; margin-top: 5px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            output.innerHTML = declarationHTML;
+            document.getElementById('declaration-preview').classList.add('active');
+        }
+
+        // إعادة تعيين نموذج التصريح الشرفي
+        function resetDeclarationForm() {
+            document.getElementById('declaration-name').value = '';
+            document.getElementById('declaration-surname').value = '';
+            document.getElementById('declaration-address').value = '';
+            document.getElementById('declaration-text').value = '';
+            document.getElementById('declaration-template').value = 'template1';
+            document.getElementById('declaration-preview').classList.remove('active');
+        }
+
+        // حفظ التصريح الشرفي
+        function saveDeclaration() {
+            const output = document.getElementById('declaration-output').innerHTML;
+            if (!output) {
+                alert('يرجى توليد التصريح أولاً');
+                return;
+            }
+            
+            // في تطبيق حقيقي، هنا سيتم حفظ البيانات في التخزين المحلي أو قاعدة البيانات
+            alert('تم حفظ التصريح بنجاح');
+        }
+
+        // توليد الطلب الخطي
+        function generateRequest() {
+            const name = document.getElementById('request-name').value;
+            const surname = document.getElementById('request-surname').value;
+            const address = document.getElementById('request-address').value;
+            const recipient = document.getElementById('request-recipient').value;
+            const subject = document.getElementById('request-subject').value;
+            const text = document.getElementById('request-text').value;
+            const template = document.getElementById('request-template').value;
+            
+            if (!name || !surname || !address || !recipient || !subject || !text) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const output = document.getElementById('request-output');
+            let requestHTML = '';
+            
+            // تطبيق القالب المختار
+            switch(template) {
+                case 'template1':
+                    requestHTML = `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="color: #2c5aa0;">طلب خطي</h2>
+                        </div>
+                        <p>إلى: ${recipient}</p>
+                        <p>الموضوع: ${subject}</p>
+                        <p>السيد/ة رئيس(ة) ${recipient}</p>
+                        <p>تحية طيبة وبعد،</p>
+                        <div style="border: 1px solid #ccc; padding: 15px; margin: 15px 0; background: #f9f9f9;">
+                            ${text}
+                        </div>
+                        <p>وتفضلوا بقبول فائق الاحترام والتقدير.</p>
+                        <div style="margin-top: 50px;">
+                            <p>مقدم الطلب:</p>
+                            <p>الاسم: ${name} ${surname}</p>
+                            <p>العنوان: ${address}</p>
+                            <p>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                            <p>التوقيع: _________________</p>
+                        </div>
+                    `;
+                    break;
+                case 'template2':
+                    requestHTML = `
+                        <div style="border: 2px solid #2c5aa0; padding: 20px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <h2 style="color: #2c5aa0; border-bottom: 1px solid #2c5aa0; padding-bottom: 10px;">طلب خطي</h2>
+                            </div>
+                            <table style="width: 100%; margin-bottom: 20px;">
+                                <tr>
+                                    <td style="width: 20%;"><strong>إلى:</strong></td>
+                                    <td>${recipient}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>الموضوع:</strong></td>
+                                    <td>${subject}</td>
+                                </tr>
+                            </table>
+                            <p>السيد/ة رئيس(ة) ${recipient}</p>
+                            <p>تحية طيبة وبعد،</p>
+                            <div style="border: 1px solid #ddd; padding: 15px; margin: 15px 0; background: #f5f5f5;">
+                                ${text}
+                            </div>
+                            <p>وتفضلوا بقبول فائق الاحترام والتقدير.</p>
+                            <div style="margin-top: 60px; display: flex; justify-content: space-between;">
+                                <div>
+                                    <p>الاسم: ${name} ${surname}</p>
+                                    <p>العنوان: ${address}</p>
+                                </div>
+                                <div>
+                                    <p>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                                    <p>التوقيع: _________________</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'template3':
+                    requestHTML = `
+                        <div style="border: 2px solid #d4af37; padding: 25px; background: linear-gradient(to bottom, #fff, #f9f9f9);">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <h2 style="color: #d4af37; font-size: 24px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">طلب خطي</h2>
+                                <div style="height: 2px; background: linear-gradient(to right, transparent, #d4af37, transparent); margin: 10px 0;"></div>
+                            </div>
+                            <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                                <p><strong>إلى:</strong> ${recipient}</p>
+                                <p><strong>الموضوع:</strong> ${subject}</p>
+                            </div>
+                            <p style="font-size: 16px;">السيد/ة رئيس(ة) ${recipient}</p>
+                            <p style="font-size: 16px;">تحية طيبة وبعد،</p>
+                            <div style="border-left: 3px solid #d4af37; padding: 15px; margin: 15px 0; background: #f9f9f9;">
+                                ${text}
+                            </div>
+                            <p style="font-size: 16px;">وتفضلوا بقبول فائق الاحترام والتقدير.</p>
+                            <div style="margin-top: 80px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <p>الاسم: ${name} ${surname}</p>
+                                    <p>العنوان: ${address}</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <p>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                                    <p>التوقيع</p>
+                                    <div style="border-top: 1px solid #000; width: 200px; margin-top: 5px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            output.innerHTML = requestHTML;
+            document.getElementById('request-preview').classList.add('active');
+        }
+
+        // إعادة تعيين نموذج الطلب الخطي
+        function resetRequestForm() {
+            document.getElementById('request-name').value = '';
+            document.getElementById('request-surname').value = '';
+            document.getElementById('request-address').value = '';
+            document.getElementById('request-recipient').value = '';
+            document.getElementById('request-subject').value = '';
+            document.getElementById('request-text').value = '';
+            document.getElementById('request-template').value = 'template1';
+            document.getElementById('request-preview').classList.remove('active');
+        }
+
+        // حفظ الطلب الخطي
+        function saveRequest() {
+            const output = document.getElementById('request-output').innerHTML;
+            if (!output) {
+                alert('يرجى توليد الطلب أولاً');
+                return;
+            }
+            
+            // في تطبيق حقيقي، هنا سيتم حفظ البيانات في التخزين المحلي أو قاعدة البيانات
+            alert('تم حفظ الطلب بنجاح');
+        }
+
+        // طباعة الوثيقة
+        function printDocument(elementId) {
+            const content = document.getElementById(elementId).innerHTML;
+            const originalContent = document.body.innerHTML;
+            
+            document.body.innerHTML = content;
+            window.print();
+            document.body.innerHTML = originalContent;
+            
+            // إعادة تحميل الصفحة بعد الطباعة
+            location.reload();
+        }
+
+        // تصدير إلى PDF
+        function exportToPDF(elementId) {
+            // في تطبيق حقيقي، ستحتاج إلى استخدام مكتبة مثل jsPDF
+            alert('سيتم تحميل الملف كـ PDF. في التطبيق الحقيقي، سيتم تنفيذ هذه الوظيفة باستخدام مكتبة jsPDF.');
+        }
+
+        // تصدير إلى Word
+        function exportToWord(elementId) {
+            // في تطبيق حقيقي، ستحتاج إلى استخدام مكتبة أو خدمة لتحويل HTML إلى Word
+            alert('سيتم تحميل الملف كـ Word. في التطبيق الحقيقي، سيتم تنفيذ هذه الوظيفة باستخدام مكتبة متخصصة.');
+        }
+    </script>
+</body>
+</html>
