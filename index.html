@@ -1,774 +1,1370 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AI DOC ALGÉRIEN — مولد وثائق</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI DOC ALGÉRIEN - مولد الوثائق القانونية</title>
+    <!-- مكتبة jsPDF لتصدير PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- مكتبة FileSaver لتنزيل الملفات -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        /* أنماط CSS الأساسية */
+        :root {
+            --primary-color: #2c5f2d;
+            --secondary-color: #97bc62;
+            --accent-color: #f0f7ee;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --card-bg: #fff;
+            --border-color: #ddd;
+            --warning-color: #b22222;
+        }
 
-<!-- jsPDF CDN لتصدير PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        .dark-mode {
+            --primary-color: #4a8c4a;
+            --secondary-color: #7aa34d;
+            --accent-color: #2a3d2a;
+            --text-color: #f0f0f0;
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+            --warning-color: #ff6b6b;
+        }
 
-<style>
-  /* ---------------------------------------
-     متغيرات الألوان ووضع مظلم/فاتح
-     --------------------------------------- */
-  :root{
-    --bg:#fafafa; --card:#ffffff; --text:#0b1720; --muted:#5b6b76;
-    --accent:#0b66d0; --gold:#d4af37; --danger:#e05353; --box:#f3f6fb;
-  }
-  [data-theme="dark"]{
-    --bg:#071021; --card:#071827; --text:#e6eef8; --muted:#9fb0c6;
-    --accent:#3b82f6; --gold:#d4af37; --danger:#ff7676; --box:#05202e;
-  }
-  html,body{height:100%;margin:0;font-family: "Noto Naskh Arabic", "Segoe UI", Tahoma, Arial, sans-serif;background:var(--bg);color:var(--text);direction:rtl}
-  .container{max-width:1100px;margin:14px auto;padding:12px}
-  header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-  .brand{display:flex;flex-direction:column;gap:4px}
-  .gold-text{color:var(--gold);font-weight:800;font-size:18px}
-  .republik{font-weight:700}
-  .sub{color:var(--muted);font-size:13px}
-  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.06);margin-top:12px}
-  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  label{display:block;font-size:13px;margin-bottom:6px}
-  input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef6;background:transparent;color:var(--text)}
-  textarea{min-height:100px;resize:vertical}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .full{grid-column:1/-1}
-  .actions{display:flex;gap:8px;flex-wrap:wrap}
-  button{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:white;cursor:pointer}
-  .btn-danger{background:var(--danger)}
-  .muted{color:var(--muted);font-size:13px}
-  .doc-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-  .doc-item{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);cursor:pointer;background:var(--box)}
-  .doc-item.active{outline:3px solid rgba(11,102,208,0.14)}
-  #preview{white-space:pre-wrap;border:1px solid #e8eef7;padding:12px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
-  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  footer{margin-top:12px;color:var(--muted);text-align:center}
-  .hint{font-size:13px;color:var(--muted);margin-top:8px}
-  .ad-placeholder{height:80px;border-radius:8px;border:1px dashed #cfd8e3;display:flex;align-items:center;justify-content:center;color:var(--muted);margin-top:8px}
-  .history-list{max-height:220px;overflow:auto;padding:6px;border-radius:8px;border:1px solid #e9f0f8;background:var(--box)}
-  .lang-switch{display:flex;gap:6px;align-items:center}
-  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.doc-list{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}.doc-list{grid-template-columns:1fr}header{justify-content:center}}
-</style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* رأس التطبيق */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #1e3f1e);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .basmala {
+            color: gold;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .republic {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            margin: 10px 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid white;
+        }
+
+        /* التنقل */
+        .nav-tabs {
+            display: flex;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* نموذج البيانات الشخصية */
+        .personal-data-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* قسم الوثائق */
+        .document-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .doc-type {
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .doc-type:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .doc-type.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* معاينة الوثيقة */
+        .document-preview {
+            min-height: 400px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 20px;
+            background-color: white;
+            color: #333;
+            white-space: pre-line;
+            line-height: 1.8;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .preview-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .template-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .template-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .template-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* الإعلان */
+        .ad-container {
+            background-color: #f0f0f0;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #ccc;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .ad-text {
+            color: #888;
+            font-style: italic;
+        }
+
+        /* التحذير القانوني */
+        .legal-warning {
+            background-color: #fff8f8;
+            border: 1px solid var(--warning-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        /* التذييل */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .personal-data-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .document-types {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .preview-controls {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .document-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="app" class="container" data-theme="light">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="basmala">اللهم صل و سلم على سيدنا محمد</div>
+                <div class="republic">الجمهورية الجزائرية الديمقراطية الشعبية</div>
+                <h1 class="app-title">AI DOC ALGÉRIEN - مولد الوثائق القانونية</h1>
+                <div class="controls">
+                    <button id="languageToggle" class="btn btn-outline">
+                        <span>Français</span>
+                    </button>
+                    <button id="themeToggle" class="btn btn-outline">
+                        <span>🌙 الوضع المظلم</span>
+                    </button>
+                    <button id="saveData" class="btn">
+                        <span>💾 حفظ البيانات</span>
+                    </button>
+                    <button id="clearData" class="btn">
+                        <span>🗑️ إفراغ البيانات</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  <!-- رأس الصفحة -->
-  <header>
-    <div class="brand">
-      <div class="gold-text">اللهم صل و سلم على سيدنا محمد</div>
-      <div class="republik">الجمهورية الجزائرية الديمقراطية الشعبية</div>
-      <div class="sub">AI DOC ALGÉRIEN — مولد وثائق غير رسمية وآمن</div>
+    <div class="nav-tabs">
+        <div class="container">
+            <div class="tab active" data-tab="personal">البيانات الشخصية</div>
+            <div class="tab" data-tab="documents">الوثائق</div>
+            <div class="tab" data-tab="preview">معاينة الوثيقة</div>
+            <div class="tab" data-tab="history">سجل الوثائق</div>
+        </div>
     </div>
 
-    <div class="row">
-      <!-- تبديل اللغة -->
-      <div class="lang-switch">
-        <select id="lang" aria-label="language">
-          <option value="ar">العربية</option>
-          <option value="fr">Français</option>
-        </select>
-      </div>
+    <div class="container">
+        <div class="main-content">
+            <!-- قسم البيانات الشخصية -->
+            <div id="personalTab" class="tab-content active">
+                <div class="card">
+                    <h2 class="card-title">البيانات الشخصية</h2>
+                    <div class="personal-data-form">
+                        <div class="form-group">
+                            <label for="firstName">الاسم</label>
+                            <input type="text" id="firstName" placeholder="أدخل الاسم">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">اللقب</label>
+                            <input type="text" id="lastName" placeholder="أدخل اللقب">
+                        </div>
+                        <div class="form-group">
+                            <label for="birthDate">تاريخ الميلاد</label>
+                            <input type="date" id="birthDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="birthPlace">مكان الازدياد</label>
+                            <input type="text" id="birthPlace" placeholder="مكان الازدياد">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">الولاية</label>
+                            <input type="text" id="state" placeholder="الولاية">
+                        </div>
+                        <div class="form-group">
+                            <label for="municipality">البلدية</label>
+                            <input type="text" id="municipality" placeholder="البلدية">
+                        </div>
+                        <div class="form-group">
+                            <label for="district">الدائرة</label>
+                            <input type="text" id="district" placeholder="الدائرة">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">مكان الإقامة/العنوان</label>
+                            <input type="text" id="address" placeholder="العنوان الكامل">
+                        </div>
+                        <div class="form-group">
+                            <label for="nationality">الجنسية</label>
+                            <input type="text" id="nationality" value="جزائرية" placeholder="الجنسية">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">رقم الهاتف</label>
+                            <input type="tel" id="phone" placeholder="رقم الهاتف">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">البريد الإلكتروني</label>
+                            <input type="email" id="email" placeholder="البريد الإلكتروني">
+                        </div>
+                        <div class="form-group">
+                            <label for="profession">المهنة (اختياري)</label>
+                            <input type="text" id="profession" placeholder="المهنة">
+                        </div>
+                        <div class="form-group">
+                            <label for="height">الطول (اختياري)</label>
+                            <input type="text" id="height" placeholder="الطول">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="notes">ملاحظات إضافية (اختياري)</label>
+                            <textarea id="notes" placeholder="ملاحظات إضافية"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-      <!-- وضع مظلم -->
-      <div class="row" style="align-items:center">
-        <label class="muted" for="themeToggle" style="margin:0 8px 0 0">وضع مظلم</label>
-        <input id="themeToggle" type="checkbox" />
-      </div>
+            <!-- قسم الوثائق -->
+            <div id="documentsTab" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">اختر نوع الوثيقة</h2>
+                    <div class="document-types">
+                        <div class="doc-type" data-doc="affidavit">تصريح شرفي</div>
+                        <div class="doc-type" data-doc="request">طلب خطي</div>
+                        <div class="doc-type" data-doc="rental">عقد كراء</div>
+                        <div class="doc-type" data-doc="sale">عقد بيع</div>
+                        <div class="doc-type" data-doc="carSale">محضر بيع سيارة</div>
+                        <div class="doc-type" data-doc="powerOfAttorney">وكالة/تفويض</div>
+                        <div class="doc-type" data-doc="workPermit">طلب تصريح عمل</div>
+                        <div class="doc-type" data-doc="schoolRegistration">طلب تسجيل مدرسي</div>
+                        <div class="doc-type" data-doc="goodConduct">طلب شهادة حسن السيرة</div>
+                        <div class="doc-type" data-doc="partnership">عقد شراكة</div>
+                        <div class="doc-type" data-doc="temporaryResidence">تصريح سكن مؤقت</div>
+                        <div class="doc-type" data-doc="resignation">نموذج استقالة</div>
+                        <div class="doc-type" data-doc="cv">سيرة ذاتية</div>
+                    </div>
+                </div>
+
+                <!-- حقول إضافية حسب نوع الوثيقة -->
+                <div id="documentFields" class="card" style="display: none;">
+                    <h2 class="card-title">تفاصيل الوثيقة</h2>
+                    <div id="dynamicFields"></div>
+                </div>
+            </div>
+
+            <!-- قسم معاينة الوثيقة -->
+            <div id="previewTab" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">معاينة الوثيقة</h2>
+                    
+                    <div class="legal-warning">
+                        ⚠️ تحذير قانوني: هذه الوثيقة غير رسمية ولا تحل محل الوثائق الرسمية الصادرة عن السلطات المختصة. لا يمكن استخدامها كوثيقة رسمية.
+                    </div>
+                    
+                    <div class="template-selector">
+                        <div class="template-btn active" data-template="1">قالب 1 (رسمي)</div>
+                        <div class="template-btn" data-template="2">قالب 2 (مبسط)</div>
+                        <div class="template-btn" data-template="3">قالب 3 (غير رسمي)</div>
+                    </div>
+                    
+                    <div class="document-preview" id="documentPreview">
+                        اختر نوع الوثيقة وأدخل البيانات اللازمة ثم انقر على "توليد المعاينة"
+                    </div>
+                    
+                    <div class="preview-controls">
+                        <button id="generatePreview" class="btn">
+                            <span>🔄 توليد المعاينة</span>
+                        </button>
+                        <button id="downloadPDF" class="btn">
+                            <span>📄 تحميل PDF</span>
+                        </button>
+                        <button id="downloadWord" class="btn">
+                            <span>📝 تحميل Word</span>
+                        </button>
+                        <button id="printDoc" class="btn">
+                            <span>🖨️ طباعة</span>
+                        </button>
+                        <button id="saveDocument" class="btn">
+                            <span>💾 حفظ الوثيقة</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم سجل الوثائق -->
+            <div id="historyTab" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">سجل الوثائق المحفوظة</h2>
+                    <div id="documentHistory">
+                        <!-- سيتم ملء هذا القسم ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- مكان للإعلانات -->
+            <div class="ad-container">
+                <div class="ad-text">مساحة إعلانية - سيتم عرض الإعلانات هنا</div>
+            </div>
+        </div>
     </div>
-  </header>
 
-  <!-- تنبيه قانوني أعلى الصفحة -->
-  <div class="card" style="border-left:6px solid var(--gold);">
-    <strong>ملاحظة قانونية / Avertissement légal</strong>
-    <div class="hint" id="legalTop">هذا التطبيق يولّد وثائق **غير رسمية** للمساعدة فقط. لا يقوم بإنشاء شهادات أو وثائق حكومية رسمية (مثل بطاقة التعريف، جواز السفر، شهادة الميلاد الرسمية). البيانات تُخزن محليًا فقط.</div>
-  </div>
+    <footer>
+        <div class="container">
+            <p>AI DOC ALGÉRIEN - مولد الوثائق القانونية الجزائرية</p>
+            <p>جميع البيانات محفوظة محلياً على جهازك ولا يتم إرسالها إلى أي خادم خارجي</p>
+            <p>© 2023 - تطوير وطني</p>
+        </div>
+    </footer>
 
-  <!-- نموذج البيانات الأساسية -->
-  <div class="card">
-    <strong id="sectionTitle">بيانات المواطن</strong>
-    <div class="hint" id="hintDesc">املأ الحقول مرة واحدة وسيتم استخدامها في كل الوثائق.</div>
-
-    <div class="grid" style="margin-top:12px">
-      <div>
-        <label id="lblFullName">الاسم و اللقب</label>
-        <input id="fullName" placeholder="مثال: دالي نجيب" />
-      </div>
-      <div>
-        <label id="lblBirthDate">تاريخ الميلاد</label>
-        <input id="birthDate" type="date" />
-      </div>
-      <div>
-        <label id="lblBirthPlace">مكان الازدياد</label>
-        <input id="birthPlace" placeholder="المدينة" />
-      </div>
-
-      <div>
-        <label id="lblWilaya">الولاية</label>
-        <input id="wilaya" placeholder="مثال: الجزائر" />
-      </div>
-      <div>
-        <label id="lblCommune">البلدية</label>
-        <input id="commune" placeholder="البلدية" />
-      </div>
-      <div>
-        <label id="lblDistrict">الدائرة</label>
-        <input id="district" placeholder="الدائرة" />
-      </div>
-
-      <div class="full">
-        <label id="lblAddress">مكان الإقامة / العنوان</label>
-        <input id="address" placeholder="العنوان الكامل" />
-      </div>
-
-      <div>
-        <label id="lblNationality">الجنسية</label>
-        <input id="nationality" placeholder="جزائري" />
-      </div>
-      <div>
-        <label id="lblPhone">الهاتف</label>
-        <input id="phone" placeholder="+213 6..." />
-      </div>
-      <div>
-        <label id="lblEmail">البريد الإلكتروني</label>
-        <input id="email" placeholder="email@example.com" />
-      </div>
-
-      <div>
-        <label id="lblProfession">المهنة (اختياري)</label>
-        <input id="profession" placeholder="مثال: أستاذ" />
-      </div>
-      <div>
-        <label id="lblHeight">الطول (اختياري)</label>
-        <input id="height" placeholder="مثال: 175 سم" />
-      </div>
-      <div class="full">
-        <label id="lblExtra">ملاحظات إضافية</label>
-        <input id="extra" placeholder="ملاحظة إن وجدت" />
-      </div>
-    </div>
-
-    <div class="actions" style="margin-top:12px">
-      <button id="saveProfile">حفظ البيانات محليًا</button>
-      <button id="clearProfile" class="btn-danger">إفراغ الحقول</button>
-      <button id="resetAll" style="background:#6b7280">إعادة تهيئة التطبيق</button>
-      <div class="muted" style="align-self:center">البيانات لا تُرسل لخادم خارجي.</div>
-    </div>
-  </div>
-
-  <!-- اختيار الوثيقة والقوالب -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-      <div>
-        <strong id="docTitle">اختر الوثيقة</strong>
-        <div class="muted" id="docHint">جميع القوالب غير رسمية ومسموح بها قانونيًا.</div>
-      </div>
-      <div class="toolbar">
-        <select id="docCategory">
-          <!-- يتم تعبئته بـ JS -->
-        </select>
-        <select id="templateSelect"></select>
-        <button id="generateBtn">توليد المعاينة</button>
-      </div>
-    </div>
-
-    <div class="doc-list" id="docList">
-      <!-- قائمة الوثائق تُملأ ديناميكيًا -->
-    </div>
-
-    <div style="margin-top:12px" class="grid">
-      <div class="full">
-        <strong id="previewTitle">معاينة الوثيقة</strong>
-        <div class="hint" id="previewHint">اضغط "توليد المعاينة" ثم استخدم خيارات الطباعة/التصدير.</div>
-        <div id="preview"></div>
-      </div>
-
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="downloadPDF">تصدير PDF</button>
-        <button id="downloadDOC">تحميل Word (.doc)</button>
-        <button id="printBtn" style="background:#10b981">طباعة</button>
-        <button id="saveDoc" style="background:#8b5cf6">حفظ في السجل</button>
-      </div>
-
-      <div>
-        <label>خيارات الطباعة</label>
-        <select id="printSize">
-          <option value="A4">A4</option>
-          <option value="Letter">Letter</option>
-        </select>
-      </div>
-
-      <div>
-        <label>مكان لإعلانات AdMob (مكان مخصص)</label>
-        <div class="ad-placeholder">AD PLACEHOLDER — وضع كود AdMob هنا لاحقًا</div>
-      </div>
-
-      <div class="full">
-        <label>سجل الوثائق المحفوظة</label>
-        <div class="history-list" id="historyList"></div>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <div class="muted">AI DOC ALGÉRIEN — التطبيق يساعد في إعداد نماذج غير رسمية فقط. تأكد من صحة المعلومات قبل الطباعة.</div>
-  </footer>
-</div>
-
-<script>
-/* ============================================================
-   AI DOC ALGÉRIEN — كود التطبيق (ملف واحد)
-   - تعليقات بالعربية تشرح الأجزاء
-   - يعتمد على localStorage للحفظ
-   - يستخدم jsPDF لتصدير PDF
-   ============================================================ */
-
-/* ---------- تعريف الوثائق والقوالب (نماذج بالعربية والفرنسية) ----------
-   هنا نعرّف كل وثيقة مع 2 قالب على الأقل (عربي + فرنسي).
-   لكل قالب: id, name_ar/name_fr, fields => الحقول المطلوبة, generate(data) => دالة توليد النص
-*/
-const DOCUMENTS = [
-  {
-    id: 'declaration_honor',
-    title_ar: 'تصريح شرفي',
-    title_fr: 'Déclaration sur l\'honneur',
-    templates: [
-      {
-        id: 'dh_simple',
-        name_ar: 'نموذج بسيط',
-        name_fr: 'Modèle simple',
-        fields: ['fullName','birthDate','birthPlace','address','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Déclaration sur l'honneur\nJe soussigné(e) ${d.fullName||'__________'} né(e) le ${d.birthDate||'__/__/____'} à ${d.birthPlace||'__________'}\nAdresse: ${d.address||'__________'}\nJe déclare sur l'honneur que: ${d.extra||'__________'}.\nFait le: ${new Date().toLocaleDateString('fr-FR')}\nSignature: ___________________`;
-          } else {
-            return `تصريح شرفي\nأنا الموقع(ة) ${d.fullName||'__________'} المولود(ة) يوم ${d.birthDate||'__/__/____'} ب ${d.birthPlace||'__________'}\nالعنوان: ${d.address||'__________'}\nأصرح على الشرف بأن: ${d.extra||'__________'}.\nحرّر بتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: ___________________`;
-          }
-        }
-      },
-      {
-        id: 'dh_loss',
-        name_ar: 'تصريح بفقدان وثيقة',
-        name_fr: 'Déclaration perte document',
-        fields: ['fullName','birthDate','address','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Déclaration de perte\nJe soussigné(e) ${d.fullName||'__________'} déclare la perte de: ${d.extra||'____________'}.\nAdresse: ${d.address||'__________'}\nFait le: ${new Date().toLocaleDateString('fr-FR')}\nSignature: _________________`;
-          } else {
-            return `تصريح بفقدان وثيقة\nأنا ${d.fullName||'__________'} أعلن فقدان: ${d.extra||'____________'}\nالعنوان: ${d.address||'__________'}\nحرّر بتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: _________________`;
-          }
-        }
-      }
-    ]
-  },
-
-  {
-    id: 'demande_simple',
-    title_ar: 'طلب خطي',
-    title_fr: 'Demande écrite',
-    templates: [
-      {
-        id: 'req_official',
-        name_ar: 'طلب رسمي بسيط',
-        name_fr: 'Demande officielle simple',
-        fields: ['fullName','address','wilaya','commune','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Objet: ${d.extra||'____________'}\nÀ qui de droit,\nJe soussigné(e) ${d.fullName||'__________'}, domicilié(e) ${d.address||'__________'}, commune ${d.commune||'__________'}, wilaya ${d.wilaya||'__________'}. Je demande: ${d.extra||'__________'}.\nCordialement.\nDate: ${new Date().toLocaleDateString('fr-FR')}\nSignature: ____________`;
-          } else {
-            return `الموضوع: ${d.extra||'____________'}\nإلى من يهمه الأمر،\nأنا ${d.fullName||'__________'} المقيم(ة) بـ ${d.address||'__________'} بلدية ${d.commune||'__________'} ولاية ${d.wilaya||'__________'}.\nأطلب: ${d.extra||'__________'}.\nمع الشكر.\nالتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: ____________`;
-          }
-        }
-      },
-      {
-        id: 'req_school',
-        name_ar: 'طلب تسجيل/تحويل مدرسي',
-        name_fr: 'Demande inscription/transfert scolaire',
-        fields: ['fullName','address','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Demande d'inscription/transfert\nJe soussigné(e) ${d.fullName||'__________'}, demande l'inscription/transfer pour: ${d.extra||'__________'}.\nAdresse: ${d.address||'__________'}\nDate: ${new Date().toLocaleDateString('fr-FR')}\nSignature: ________`;
-          } else {
-            return `طلب تسجيل/تحويل\nأنا ${d.fullName||'__________'} أطلب تسجيل/تحويل: ${d.extra||'__________'}\nالعنوان: ${d.address||'__________'}\nالتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: ________`;
-          }
-        }
-      }
-    ]
-  },
-
-  {
-    id: 'contrat_location',
-    title_ar: 'عقد كراء بسيط',
-    title_fr: 'Contrat de location simple',
-    templates: [
-      {
-        id: 'rent_simple',
-        name_ar: 'عقد كراء مبسط',
-        name_fr: 'Contrat simplifié',
-        fields: ['fullName','address','phone','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Contrat de location (simplifié)\nLocataire: ${d.fullName||'__________'}\nAdresse: ${d.address||'__________'}\nTéléphone: ${d.phone||'__________'}\nConditions: ${d.extra||'__________'}\nDate: ${new Date().toLocaleDateString('fr-FR')}\nSignatures: __________`;
-          } else {
-            return `عقد كراء (مبسط)\nالمكتري: ${d.fullName||'__________'}\nالعنوان: ${d.address||'__________'}\nالهاتف: ${d.phone||'__________'}\nالشروط: ${d.extra||'__________'}\nالتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيعات: __________`;
-          }
-        }
-      }
-    ]
-  },
-
-  {
-    id: 'vente_vehicule',
-    title_ar: 'محضر بيع سيارة (مبسط)',
-    title_fr: 'Acte de vente véhicule (simple)',
-    templates: [
-      {
-        id: 'veh_sale',
-        name_ar: 'محضر بيع مبسط',
-        name_fr: 'Acte simplifié',
-        fields: ['fullName','address','phone','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Acte de vente véhicule\nVendeur: ${d.fullName||'__________'}\nAdresse: ${d.address||'__________'}\nTéléphone: ${d.phone||'__________'}\nDétails véhicule: ${d.extra||'__________'}\nPrix: __________\nDate: ${new Date().toLocaleDateString('fr-FR')}\nSignature: _________`;
-          } else {
-            return `محضر بيع سيارة\nالبائع: ${d.fullName||'__________'}\nالعنوان: ${d.address||'__________'}\nالهاتف: ${d.phone||'__________'}\nمعلومات السيارة: ${d.extra||'__________'}\nالثمن: __________\nالتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: _________`;
-          }
-        }
-      }
-    ]
-  },
-
-  {
-    id: 'procuration',
-    title_ar: 'وكالة / تفويض خاص',
-    title_fr: 'Procuration',
-    templates: [
-      {
-        id: 'proxy_personal',
-        name_ar: 'تفويض شخصي',
-        name_fr: 'Procuration personnelle',
-        fields: ['fullName','nationality','address','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Procuration\nJe soussigné(e) ${d.fullName||'__________'} (nationalité: ${d.nationality||'__________'}) donne pouvoir à: _______ pour ${d.extra||'__________'}.\nAdresse: ${d.address||'__________'}\nDate: ${new Date().toLocaleDateString('fr-FR')}\nSignature: _________`;
-          } else {
-            return `تفويض / وكالة\nأنا ${d.fullName||'__________'} (الجنسية: ${d.nationality||'__________'}) أفوض السيد/ة _______ للقيام بـ ${d.extra||'__________'} نيابة عني.\nالعنوان: ${d.address||'__________'}\nالتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: _________`;
-          }
-        }
-      }
-    ]
-  },
-
-  {
-    id: 'lettre_demission',
-    title_ar: 'استقالة بسيطة',
-    title_fr: 'Lettre de démission simple',
-    templates: [
-      {
-        id: 'resign_simple',
-        name_ar: 'نموذج استقالة',
-        name_fr: 'Modèle démission',
-        fields: ['fullName','address','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `Lettre de démission\nÀ: ________\nJe soussigné(e) ${d.fullName||'__________'} démissionne de mon poste pour raison: ${d.extra||'__________'}.\nAdresse: ${d.address||'__________'}\nDate: ${new Date().toLocaleDateString('fr-FR')}\nSignature: _______`;
-          } else {
-            return `طلب استقالة\nإلى: ________\nأنا ${d.fullName||'__________'} أقدّم استقالتي لأسباب: ${d.extra||'__________'}\nالعنوان: ${d.address||'__________'}\nالتاريخ: ${new Date().toLocaleDateString('ar-EG')}\nالتوقيع: _______`;
-          }
-        }
-      }
-    ]
-  },
-
-  {
-    id: 'cv_template',
-    title_ar: 'سيرة ذاتية جاهزة',
-    title_fr: 'CV prêt',
-    templates: [
-      {
-        id: 'cv_modern',
-        name_ar: 'قالب احترافي',
-        name_fr: 'Modèle professionnel',
-        fields: ['fullName','profession','phone','email','address','extra'],
-        generate: (d,lang) => {
-          if(lang==='fr'){
-            return `CV\nNom: ${d.fullName||'__________'}\nProfession: ${d.profession||'__________'}\nTéléphone: ${d.phone||'__________'}\nEmail: ${d.email||'__________'}\nAdresse: ${d.address||'__________'}\nCompétences/Notes: ${d.extra||'__________'}`;
-          } else {
-            return `السيرة الذاتية\nالاسم: ${d.fullName||'__________'}\nالمهنة: ${d.profession||'__________'}\nالهاتف: ${d.phone||'__________'}\nالبريد: ${d.email||'__________'}\nالعنوان: ${d.address||'__________'}\nملاحظات/مهارات: ${d.extra||'__________'}`;
-          }
-        }
-      }
-    ]
-  }
-
-]; // نهاية DOCUMENTS
-
-/* ---------- حالة التطبيق وDOM ---------- */
-const state = {
-  lang: localStorage.getItem('duc_lang') || 'ar',
-  theme: localStorage.getItem('duc_theme') || 'light',
-  selectedDoc: null,
-  selectedTpl: null
-};
-
-const appEl = document.getElementById('app');
-const langEl = document.getElementById('lang');
-const themeToggle = document.getElementById('themeToggle');
-const docListEl = document.getElementById('docList');
-const docCategoryEl = document.getElementById('docCategory');
-const templateSelect = document.getElementById('templateSelect');
-const previewEl = document.getElementById('preview');
-const historyListEl = document.getElementById('historyList');
-
-/* ---------- حقول المستخدم ---------- */
-const fields = {
-  fullName: document.getElementById('fullName'),
-  birthDate: document.getElementById('birthDate'),
-  birthPlace: document.getElementById('birthPlace'),
-  wilaya: document.getElementById('wilaya'),
-  commune: document.getElementById('commune'),
-  district: document.getElementById('district'),
-  address: document.getElementById('address'),
-  nationality: document.getElementById('nationality'),
-  phone: document.getElementById('phone'),
-  email: document.getElementById('email'),
-  profession: document.getElementById('profession'),
-  height: document.getElementById('height'),
-  extra: document.getElementById('extra')
-};
-
-/* ---------- أدوات التحكم ---------- */
-const saveProfileBtn = document.getElementById('saveProfile');
-const clearProfileBtn = document.getElementById('clearProfile');
-const resetAllBtn = document.getElementById('resetAll');
-const generateBtn = document.getElementById('generateBtn');
-const downloadPDFBtn = document.getElementById('downloadPDF');
-const downloadDOCBtn = document.getElementById('downloadDOC');
-const printBtn = document.getElementById('printBtn');
-const saveDocBtn = document.getElementById('saveDoc');
-const downloadSizeEl = document.getElementById('printSize');
-
-/* ---------- تهيئة الواجهة ---------- */
-function init(){
-  // ضبط اللغة والوضع
-  langEl.value = state.lang;
-  themeToggle.checked = state.theme==='dark';
-  applyTheme(state.theme);
-  applyLang(state.lang);
-
-  // بناء قائمة الوثائق
-  renderDocList();
-  populateDocSelect();
-
-  // تحميل بروفايل محفوظ إن وُجد
-  loadProfile();
-
-  // عرض السجل
-  renderHistory();
-
-  // أحداث
-  langEl.addEventListener('change', e => {
-    state.lang = e.target.value; localStorage.setItem('duc_lang', state.lang);
-    applyLang(state.lang);
-    renderDocList(); populateDocSelect();
-  });
-  themeToggle.addEventListener('change', e => {
-    const t = e.target.checked ? 'dark' : 'light'; applyTheme(t); localStorage.setItem('duc_theme', t);
-  });
-  saveProfileBtn.addEventListener('click', saveProfile);
-  clearProfileBtn.addEventListener('click', clearProfile);
-  resetAllBtn.addEventListener('click', resetAll);
-  generateBtn.addEventListener('click', generatePreview);
-  downloadPDFBtn.addEventListener('click', downloadPDF);
-  downloadDOCBtn.addEventListener('click', downloadDOC);
-  printBtn.addEventListener('click', () => window.print());
-  saveDocBtn.addEventListener('click', saveDocumentToHistory);
-  docCategoryEl.addEventListener('change', onCategoryChange);
-  templateSelect.addEventListener('change', onTemplateChange);
-}
-init();
-
-/* ---------- وظائف التطبيق الأساسية ---------- */
-
-// تطبيق اللغة (نصوص رئيسية فقط — يمكن توسيع)
-function applyLang(lang){
-  if(lang==='fr'){
-    document.documentElement.lang = 'fr';
-    document.getElementById('sectionTitle').textContent = 'Informations du citoyen';
-    document.getElementById('docTitle').textContent = 'Choisissez le document';
-    document.getElementById('previewTitle').textContent = 'Aperçu du document';
-    document.getElementById('previewHint').textContent = 'Appuyez sur "Générer l\'aperçu" puis exportez.';
-    saveProfileBtn.textContent = 'Enregistrer localement';
-    clearProfileBtn.textContent = 'Effacer les champs';
-    resetAllBtn.textContent = 'Réinitialiser l\'app';
-    generateBtn.textContent = 'Générer l\'aperçu';
-    downloadPDFBtn.textContent = 'Exporter PDF';
-    downloadDOCBtn.textContent = 'Télécharger Word (.doc)';
-    printBtn.textContent = 'Imprimer';
-    saveDocBtn.textContent = 'Enregistrer dans l\'historique';
-    document.getElementById('legalTop').textContent = "Cet outil génère des modèles NON officiels. Ne remplace pas les documents de l'état.";
-  } else {
-    document.documentElement.lang = 'ar';
-    document.getElementById('sectionTitle').textContent = 'بيانات المواطن';
-    document.getElementById('docTitle').textContent = 'اختر الوثيقة';
-    document.getElementById('previewTitle').textContent = 'معاينة الوثيقة';
-    document.getElementById('previewHint').textContent = 'اضغط "توليد المعاينة" ثم استخدم خيارات التصدير.';
-    saveProfileBtn.textContent = 'حفظ البيانات محليًا';
-    clearProfileBtn.textContent = 'إفراغ الحقول';
-    resetAllBtn.textContent = 'إعادة تهيئة التطبيق';
-    generateBtn.textContent = 'توليد المعاينة';
-    downloadPDFBtn.textContent = 'تصدير PDF';
-    downloadDOCBtn.textContent = 'تحميل Word (.doc)';
-    printBtn.textContent = 'طباعة';
-    saveDocBtn.textContent = 'حفظ في السجل';
-    document.getElementById('legalTop').textContent = "هذا التطبيق يولّد وثائق غير رسمية للمساعدة فقط. لا ينشئ وثائق حكومية رسمية.";
-  }
-}
-
-// تطبيق الثيم
-function applyTheme(t){
-  appEl.setAttribute('data-theme', t);
-  if(t==='dark'){ document.body.style.background='#071021'; } else { document.body.style.background='var(--bg)'; }
-}
-
-/* ---------- إدارة بروفايل المستخدم (localStorage) ---------- */
-function saveProfile(){
-  const payload = {};
-  Object.keys(fields).forEach(k => payload[k] = fields[k].value || '');
-  localStorage.setItem('duc_profile', JSON.stringify(payload));
-  alert(state.lang==='fr' ? 'Données enregistrées localement.' : 'تم حفظ البيانات محليًا.');
-}
-function loadProfile(){
-  const raw = localStorage.getItem('duc_profile');
-  if(!raw) return;
-  try{
-    const p = JSON.parse(raw);
-    Object.keys(fields).forEach(k => fields[k].value = p[k] || '');
-  }catch(e){}
-}
-function clearProfile(){
-  if(!confirm(state.lang==='fr' ? 'Effacer tous les champs ?' : 'هل تريد إفراغ الحقول؟')) return;
-  Object.keys(fields).forEach(k => fields[k].value = '');
-  localStorage.removeItem('duc_profile');
-  previewEl.textContent = '';
-}
-
-/* ---------- إعادة تهيئة التطبيق ---------- */
-function resetAll(){
-  if(!confirm(state.lang==='fr' ? 'Réinitialiser l\'application ?' : 'هل تريد إعادة تهيئة التطبيق وإفراغ السجل؟')) return;
-  localStorage.clear();
-  Object.keys(fields).forEach(k => fields[k].value = '');
-  previewEl.textContent = '';
-  renderHistory();
-  alert(state.lang==='fr' ? 'Réinitialisé.' : 'تمت إعادة التهيئة.');
-}
-
-/* ---------- بناء وعرض قائمة الوثائق والقوالب ---------- */
-function renderDocList(){
-  docListEl.innerHTML = '';
-  DOCUMENTS.forEach(doc => {
-    const div = document.createElement('div');
-    div.className = 'doc-item';
-    div.dataset.id = doc.id;
-    div.innerHTML = `<strong>${state.lang==='fr' ? doc.title_fr : doc.title_ar}</strong><div class="muted" style="margin-top:6px">${doc.templates.length} قالب</div>`;
-    div.addEventListener('click', () => selectDocument(doc.id));
-    docListEl.appendChild(div);
-  });
-}
-function populateDocSelect(){
-  docCategoryEl.innerHTML = '';
-  DOCUMENTS.forEach(doc => {
-    const opt = document.createElement('option');
-    opt.value = doc.id;
-    opt.textContent = state.lang==='fr' ? doc.title_fr : doc.title_ar;
-    docCategoryEl.appendChild(opt);
-  });
-  // افتراضيًا نختار الأول
-  docCategoryEl.selectedIndex = 0;
-  onCategoryChange();
-}
-
-/* ---------- عند اختيار وثيقة من القائمة أو السيلكت --------- */
-function selectDocument(id){
-  docCategoryEl.value = id;
-  onCategoryChange();
-  // تحديث واجهة الاختيار النشطة
-  document.querySelectorAll('.doc-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
-}
-
-function onCategoryChange(){
-  const id = docCategoryEl.value;
-  const doc = DOCUMENTS.find(d => d.id === id);
-  if(!doc) return;
-  state.selectedDoc = doc;
-  // ملء قوالب
-  templateSelect.innerHTML = '';
-  doc.templates.forEach(tpl => {
-    const o = document.createElement('option'); o.value = tpl.id; o.textContent = state.lang==='fr' ? tpl.name_fr : tpl.name_ar;
-    templateSelect.appendChild(o);
-  });
-  state.selectedTpl = doc.templates[0];
-}
-
-/* ---------- عند تغيير القالب -------- */
-function onTemplateChange(){
-  if(!state.selectedDoc) return;
-  const tplId = templateSelect.value;
-  state.selectedTpl = state.selectedDoc.templates.find(t => t.id === tplId);
-}
-
-/* ---------- جمع بيانات المستخدم لاستخدامها في التوليد -------- */
-function collectData(){
-  const payload = {};
-  Object.keys(fields).forEach(k => payload[k] = fields[k].value || '');
-  return payload;
-}
-
-/* ---------- توليد المعاينة ---------------- */
-function generatePreview(){
-  if(!state.selectedDoc || !state.selectedTpl){
-    alert(state.lang==='fr' ? 'Choisissez un document d\'abord.' : 'اختر وثيقة أولاً.');
-    return;
-  }
-  const data = collectData();
-  const text = state.selectedTpl.generate(data, state.lang);
-  previewEl.textContent = text;
-}
-
-/* ---------- تنزيل Word (HTML blob) ---------- */
-function downloadDOC(){
-  if(!previewEl.textContent){ alert(state.lang==='fr' ? 'Générez d\'abord l\'aperçu.' : 'أنشئ المعاينة أولاً.'); return; }
-  const header = '<html><head><meta charset="utf-8"></head><body><pre style="font-family:inherit;white-space:pre-wrap;">';
-  const footer = '</pre></body></html>';
-  const html = header + escapeHtml(previewEl.textContent) + footer;
-  const blob = new Blob([html], {type: 'application/msword'});
-  const filename = `${state.selectedDoc.id}_${(fields.fullName.value||'user')}.doc`;
-  downloadBlob(blob, filename);
-}
-
-/* ---------- تنزيل PDF باستخدام jsPDF ---------- */
-async function downloadPDF(){
-  if(!previewEl.textContent){ alert(state.lang==='fr' ? 'Générez d\'abord l\'aperçu.' : 'أنشئ المعاينة أولاً.'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'pt',format: downloadSizeEl.value === 'A4' ? 'a4' : 'letter'});
-  const left = 40;
-  let y = 60;
-  doc.setFontSize(12);
-  // ترويسة بسيطة
-  doc.setFontSize(14);
-  doc.text(state.lang==='fr' ? 'République Algérienne Démocratique et Populaire' : 'الجمهورية الجزائرية الديمقراطية الشعبية', left, 30);
-  doc.setFontSize(12);
-  const lines = previewEl.textContent.split('\n');
-  lines.forEach(line => {
-    const wrapped = doc.splitTextToSize(line, doc.internal.pageSize.getWidth() - left*2);
-    wrapped.forEach(w => {
-      if(y > doc.internal.pageSize.getHeight() - 40){ doc.addPage(); y = 60; }
-      doc.text(w, left, y);
-      y += 14;
-    });
-  });
-  const filename = `${state.selectedDoc.id}_${(fields.fullName.value||'user')}.pdf`;
-  doc.save(filename);
-}
-
-/* ---------- حفظ الوثيقة في السجل (localStorage) ---------- */
-function saveDocumentToHistory(){
-  if(!previewEl.textContent){ alert(state.lang==='fr' ? 'Générez d\'abord.' : 'أنشئ المعاينة أولاً.'); return; }
-  const history = JSON.parse(localStorage.getItem('duc_history')||'[]');
-  const item = {
-    id: 'doc_'+Date.now(),
-    docId: state.selectedDoc.id,
-    templateId: state.selectedTpl.id,
-    title: state.lang==='fr' ? state.selectedTpl.name_fr : state.selectedTpl.name_ar,
-    content: previewEl.textContent,
-    createdAt: new Date().toISOString()
-  };
-  history.unshift(item);
-  localStorage.setItem('duc_history', JSON.stringify(history));
-  renderHistory();
-  alert(state.lang==='fr' ? 'Document enregistré.' : 'تم حفظ الوثيقة في السجل.');
-}
-
-/* ---------- عرض السجل ---------- */
-function renderHistory(){
-  const history = JSON.parse(localStorage.getItem('duc_history')||'[]');
-  historyListEl.innerHTML = '';
-  if(history.length===0){
-    historyListEl.innerHTML = `<div class="muted">${state.lang==='fr' ? 'Aucun document enregistré.' : 'لا توجد وثائق محفوظة.'}</div>`;
-    return;
-  }
-  history.forEach(item => {
-    const div = document.createElement('div');
-    div.style.borderBottom = '1px solid rgba(0,0,0,0.04)';
-    div.style.padding = '6px';
-    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div>
-      <strong>${item.title}</strong><div class="muted" style="font-size:12px">${new Date(item.createdAt).toLocaleString(state.lang==='fr'?'fr-FR':'ar-EG')}</div>
-    </div>
-    <div style="display:flex;gap:6px">
-      <button class="small" onclick='viewHistory("${item.id}")'>${state.lang==='fr'?'Voir':'معاينة'}</button>
-      <button class="small" onclick='downloadHistory("${item.id}")'>${state.lang==='fr'?'Télécharger':'تحميل'}</button>
-      <button class="small" onclick='deleteHistory("${item.id}")' style="background:${getCssVar('--danger')}">حذف</button>
-    </div></div>`;
-    historyListEl.appendChild(div);
-  });
-}
-
-/* ---------- دوال السجل: معاينة، تنزيل، حذف ---------- */
-window.viewHistory = function(id){
-  const history = JSON.parse(localStorage.getItem('duc_history')||'[]');
-  const item = history.find(h => h.id === id);
-  if(!item) return;
-  previewEl.textContent = item.content;
-};
-window.downloadHistory = function(id){
-  const history = JSON.parse(localStorage.getItem('duc_history')||'[]');
-  const item = history.find(h => h.id === id);
-  if(!item) return;
-  const blob = new Blob([item.content], {type: 'text/plain;charset=utf-8'});
-  downloadBlob(blob, `${item.title.replace(/\s+/g,'_')}.txt`);
-};
-window.deleteHistory = function(id){
-  if(!confirm(state.lang==='fr'?'Supprimer ce document ?':'هل تريد حذف هذه الوثيقة؟')) return;
-  let history = JSON.parse(localStorage.getItem('duc_history')||'[]');
-  history = history.filter(h => h.id !== id);
-  localStorage.setItem('duc_history', JSON.stringify(history));
-  renderHistory();
-};
-
-/* ---------- أدوات مساعدة ---------- */
-function downloadBlob(blob, filename){
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function escapeHtml(text){ return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function getCssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name) || '#e53e3e'; }
-
-/* ---------- تهيئة اختيار المستند الافتراضي ---------- */
-onCategoryChange(); // يحدد أول وثيقة
-renderHistory(); // يعرض السجل
-
-/* ---------- وظيفة تنزيل الملف النصي (معالجة بسيطة) ---------- */
-function downloadTextFile(content, filename, mime='text/plain'){
-  const blob = new Blob([content], {type: mime + ';charset=utf-8'});
-  downloadBlob(blob, filename);
-}
-
-/* ---------- أحداث مساعدة إضافية ---------- */
-// عند تحميل الصفحة، قم بتعيين العرض الابتدائي للغة وثيم من localStorage
-(function loadSettings(){
-  const lng = localStorage.getItem('duc_lang') || 'ar';
-  const th = localStorage.getItem('duc_theme') || 'light';
-  state.lang = lng; state.theme = th;
-  langEl.value = lng;
-  themeToggle.checked = th==='dark';
-  applyLang(lng); applyTheme(th);
-})();
-
-</script>
+    <script>
+        // الكود الأساسي للتطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة المتغيرات
+            let currentLanguage = 'ar';
+            let currentTheme = 'light';
+            let currentDocumentType = '';
+            let currentTemplate = '1';
+            let personalData = {};
+            let documentHistory = [];
+            
+            // عناصر DOM الرئيسية
+            const languageToggle = document.getElementById('languageToggle');
+            const themeToggle = document.getElementById('themeToggle');
+            const saveDataBtn = document.getElementById('saveData');
+            const clearDataBtn = document.getElementById('clearData');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const docTypes = document.querySelectorAll('.doc-type');
+            const documentFields = document.getElementById('documentFields');
+            const dynamicFields = document.getElementById('dynamicFields');
+            const templateBtns = document.querySelectorAll('.template-btn');
+            const generatePreviewBtn = document.getElementById('generatePreview');
+            const downloadPDFBtn = document.getElementById('downloadPDF');
+            const downloadWordBtn = document.getElementById('downloadWord');
+            const printDocBtn = document.getElementById('printDoc');
+            const saveDocumentBtn = document.getElementById('saveDocument');
+            const documentPreview = document.getElementById('documentPreview');
+            const documentHistoryEl = document.getElementById('documentHistory');
+            
+            // تحميل البيانات المحفوظة
+            loadSavedData();
+            
+            // تبديل اللغة
+            languageToggle.addEventListener('click', function() {
+                currentLanguage = currentLanguage === 'ar' ? 'fr' : 'ar';
+                updateLanguage();
+            });
+            
+            // تبديل الوضع المظلم/الفاتح
+            themeToggle.addEventListener('click', function() {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                document.body.classList.toggle('dark-mode');
+                updateThemeText();
+            });
+            
+            // حفظ البيانات
+            saveDataBtn.addEventListener('click', function() {
+                savePersonalData();
+                alert(currentLanguage === 'ar' ? 'تم حفظ البيانات بنجاح' : 'Données sauvegardées avec succès');
+            });
+            
+            // إفراغ البيانات
+            clearDataBtn.addEventListener('click', function() {
+                if (confirm(currentLanguage === 'ar' ? 'هل أنت متأكد من إفراغ جميع البيانات؟' : 'Êtes-vous sûr de vouloir effacer toutes les données?')) {
+                    clearPersonalData();
+                    alert(currentLanguage === 'ar' ? 'تم إفراغ البيانات' : 'Données effacées');
+                }
+            });
+            
+            // التنقل بين الأقسام
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // تحديث التبويبات النشطة
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // تحديث المحتوى النشط
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId + 'Tab').classList.add('active');
+                });
+            });
+            
+            // اختيار نوع الوثيقة
+            docTypes.forEach(docType => {
+                docType.addEventListener('click', function() {
+                    // تحديث الوثيقة النشطة
+                    docTypes.forEach(dt => dt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentDocumentType = this.getAttribute('data-doc');
+                    showDocumentFields(currentDocumentType);
+                    
+                    // الانتقال تلقائياً إلى قسم المعاينة
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelector('.tab[data-tab="preview"]').classList.add('active');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById('previewTab').classList.add('active');
+                });
+            });
+            
+            // اختيار القالب
+            templateBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    templateBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTemplate = this.getAttribute('data-template');
+                });
+            });
+            
+            // توليد المعاينة
+            generatePreviewBtn.addEventListener('click', function() {
+                generateDocumentPreview();
+            });
+            
+            // تحميل PDF
+            downloadPDFBtn.addEventListener('click', function() {
+                generatePDF();
+            });
+            
+            // تحميل Word
+            downloadWordBtn.addEventListener('click', function() {
+                generateWord();
+            });
+            
+            // طباعة الوثيقة
+            printDocBtn.addEventListener('click', function() {
+                window.print();
+            });
+            
+            // حفظ الوثيقة في السجل
+            saveDocumentBtn.addEventListener('click', function() {
+                saveToHistory();
+            });
+            
+            // وظائف المساعدة
+            
+            // تحديث اللغة
+            function updateLanguage() {
+                if (currentLanguage === 'ar') {
+                    languageToggle.innerHTML = '<span>Français</span>';
+                    document.documentElement.dir = 'rtl';
+                    document.documentElement.lang = 'ar';
+                    // تحديث النصوص العربية
+                    updateArabicText();
+                } else {
+                    languageToggle.innerHTML = '<span>العربية</span>';
+                    document.documentElement.dir = 'ltr';
+                    document.documentElement.lang = 'fr';
+                    // تحديث النصوص الفرنسية
+                    updateFrenchText();
+                }
+            }
+            
+            // تحديث نص الوضع المظلم/الفاتح
+            function updateThemeText() {
+                if (currentLanguage === 'ar') {
+                    themeToggle.innerHTML = currentTheme === 'light' ? '<span>🌙 الوضع المظلم</span>' : '<span>☀️ الوضع الفاتح</span>';
+                } else {
+                    themeToggle.innerHTML = currentTheme === 'light' ? '<span>🌙 Mode sombre</span>' : '<span>☀️ Mode clair</span>';
+                }
+            }
+            
+            // تحديث النصوص العربية
+            function updateArabicText() {
+                // سيتم تحديث النصوص في التطبيق بالعربية
+                document.querySelector('.app-title').textContent = 'AI DOC ALGÉRIEN - مولد الوثائق القانونية';
+                document.querySelector('.tab[data-tab="personal"]').textContent = 'البيانات الشخصية';
+                document.querySelector('.tab[data-tab="documents"]').textContent = 'الوثائق';
+                document.querySelector('.tab[data-tab="preview"]').textContent = 'معاينة الوثيقة';
+                document.querySelector('.tab[data-tab="history"]').textContent = 'سجل الوثائق';
+                
+                // تحديث النصوص في الأزرار
+                saveDataBtn.innerHTML = '<span>💾 حفظ البيانات</span>';
+                clearDataBtn.innerHTML = '<span>🗑️ إفراغ البيانات</span>';
+                generatePreviewBtn.innerHTML = '<span>🔄 توليد المعاينة</span>';
+                downloadPDFBtn.innerHTML = '<span>📄 تحميل PDF</span>';
+                downloadWordBtn.innerHTML = '<span>📝 تحميل Word</span>';
+                printDocBtn.innerHTML = '<span>🖨️ طباعة</span>';
+                saveDocumentBtn.innerHTML = '<span>💾 حفظ الوثيقة</span>';
+                
+                // تحديث النصوص الأخرى
+                document.querySelector('#personalTab .card-title').textContent = 'البيانات الشخصية';
+                document.querySelector('#documentsTab .card-title').textContent = 'اختر نوع الوثيقة';
+                document.querySelector('#previewTab .card-title').textContent = 'معاينة الوثيقة';
+                document.querySelector('#historyTab .card-title').textContent = 'سجل الوثائق المحفوظة';
+                
+                // تحديث نصوص أنواع الوثائق
+                document.querySelector('.doc-type[data-doc="affidavit"]').textContent = 'تصريح شرفي';
+                document.querySelector('.doc-type[data-doc="request"]').textContent = 'طلب خطي';
+                document.querySelector('.doc-type[data-doc="rental"]').textContent = 'عقد كراء';
+                document.querySelector('.doc-type[data-doc="sale"]').textContent = 'عقد بيع';
+                document.querySelector('.doc-type[data-doc="carSale"]').textContent = 'محضر بيع سيارة';
+                document.querySelector('.doc-type[data-doc="powerOfAttorney"]').textContent = 'وكالة/تفويض';
+                document.querySelector('.doc-type[data-doc="workPermit"]').textContent = 'طلب تصريح عمل';
+                document.querySelector('.doc-type[data-doc="schoolRegistration"]').textContent = 'طلب تسجيل مدرسي';
+                document.querySelector('.doc-type[data-doc="goodConduct"]').textContent = 'طلب شهادة حسن السيرة';
+                document.querySelector('.doc-type[data-doc="partnership"]').textContent = 'عقد شراكة';
+                document.querySelector('.doc-type[data-doc="temporaryResidence"]').textContent = 'تصريح سكن مؤقت';
+                document.querySelector('.doc-type[data-doc="resignation"]').textContent = 'نموذج استقالة';
+                document.querySelector('.doc-type[data-doc="cv"]').textContent = 'سيرة ذاتية';
+                
+                // تحديث نصوص القوالب
+                document.querySelector('.template-btn[data-template="1"]').textContent = 'قالب 1 (رسمي)';
+                document.querySelector('.template-btn[data-template="2"]').textContent = 'قالب 2 (مبسط)';
+                document.querySelector('.template-btn[data-template="3"]').textContent = 'قالب 3 (غير رسمي)';
+                
+                // تحديث نص التحذير القانوني
+                document.querySelector('.legal-warning').innerHTML = '⚠️ تحذير قانوني: هذه الوثيقة غير رسمية ولا تحل محل الوثائق الرسمية الصادرة عن السلطات المختصة. لا يمكن استخدامها كوثيقة رسمية.';
+                
+                // تحديث نص الإعلان
+                document.querySelector('.ad-text').textContent = 'مساحة إعلانية - سيتم عرض الإعلانات هنا';
+                
+                // تحديث التذييل
+                document.querySelector('footer p:nth-child(1)').textContent = 'AI DOC ALGÉRIEN - مولد الوثائق القانونية الجزائرية';
+                document.querySelector('footer p:nth-child(2)').textContent = 'جميع البيانات محفوظة محلياً على جهازك ولا يتم إرسالها إلى أي خادم خارجي';
+                document.querySelector('footer p:nth-child(3)').textContent = '© 2023 - تطوير وطني';
+            }
+            
+            // تحديث النصوص الفرنسية
+            function updateFrenchText() {
+                // سيتم تحديث النصوص في التطبيق بالفرنسية
+                document.querySelector('.app-title').textContent = 'AI DOC ALGÉRIEN - Générateur de Documents Légaux';
+                document.querySelector('.tab[data-tab="personal"]').textContent = 'Données Personnelles';
+                document.querySelector('.tab[data-tab="documents"]').textContent = 'Documents';
+                document.querySelector('.tab[data-tab="preview"]').textContent = 'Aperçu du Document';
+                document.querySelector('.tab[data-tab="history"]').textContent = 'Historique des Documents';
+                
+                // تحديث النصوص في الأزرار
+                saveDataBtn.innerHTML = '<span>💾 Sauvegarder les Données</span>';
+                clearDataBtn.innerHTML = '<span>🗑️ Effacer les Données</span>';
+                generatePreviewBtn.innerHTML = '<span>🔄 Générer l\'Aperçu</span>';
+                downloadPDFBtn.innerHTML = '<span>📄 Télécharger PDF</span>';
+                downloadWordBtn.innerHTML = '<span>📝 Télécharger Word</span>';
+                printDocBtn.innerHTML = '<span>🖨️ Imprimer</span>';
+                saveDocumentBtn.innerHTML = '<span>💾 Sauvegarder le Document</span>';
+                
+                // تحديث النصوص الأخرى
+                document.querySelector('#personalTab .card-title').textContent = 'Données Personnelles';
+                document.querySelector('#documentsTab .card-title').textContent = 'Choisissez le Type de Document';
+                document.querySelector('#previewTab .card-title').textContent = 'Aperçu du Document';
+                document.querySelector('#historyTab .card-title').textContent = 'Historique des Documents Sauvegardés';
+                
+                // تحديث نصوص أنواع الوثائق
+                document.querySelector('.doc-type[data-doc="affidavit"]').textContent = 'Déclaration sur l\'Honneur';
+                document.querySelector('.doc-type[data-doc="request"]').textContent = 'Demande Écrite';
+                document.querySelector('.doc-type[data-doc="rental"]').textContent = 'Contrat de Location';
+                document.querySelector('.doc-type[data-doc="sale"]').textContent = 'Contrat de Vente';
+                document.querySelector('.doc-type[data-doc="carSale"]').textContent = 'Procès-verbal de Vente de Voiture';
+                document.querySelector('.doc-type[data-doc="powerOfAttorney"]').textContent = 'Procuration/Mandat';
+                document.querySelector('.doc-type[data-doc="workPermit"]').textContent = 'Demande de Permis de Travail';
+                document.querySelector('.doc-type[data-doc="schoolRegistration"]').textContent = 'Demande d\'Inscription Scolaire';
+                document.querySelector('.doc-type[data-doc="goodConduct"]').textContent = 'Demande de Certificat de Bonne Conduite';
+                document.querySelector('.doc-type[data-doc="partnership"]').textContent = 'Contrat de Partenariat';
+                document.querySelector('.doc-type[data-doc="temporaryResidence"]').textContent = 'Autorisation de Résidence Temporaire';
+                document.querySelector('.doc-type[data-doc="resignation"]').textContent = 'Modèle de Démission';
+                document.querySelector('.doc-type[data-doc="cv"]').textContent = 'Curriculum Vitae';
+                
+                // تحديث نصوص القوالب
+                document.querySelector('.template-btn[data-template="1"]').textContent = 'Modèle 1 (Officiel)';
+                document.querySelector('.template-btn[data-template="2"]').textContent = 'Modèle 2 (Simplifié)';
+                document.querySelector('.template-btn[data-template="3"]').textContent = 'Modèle 3 (Informel)';
+                
+                // تحديث نص التحذير القانوني
+                document.querySelector('.legal-warning').innerHTML = '⚠️ Avertissement Légal: Ce document est non officiel et ne remplace pas les documents officiels délivrés par les autorités compétentes. Il ne peut pas être utilisé comme document officiel.';
+                
+                // تحديث نص الإعلان
+                document.querySelector('.ad-text').textContent = 'Espace Publicitaire - Les annonces seront affichées ici';
+                
+                // تحديث التذييل
+                document.querySelector('footer p:nth-child(1)').textContent = 'AI DOC ALGÉRIEN - Générateur de Documents Légaux Algériens';
+                document.querySelector('footer p:nth-child(2)').textContent = 'Toutes les données sont stockées localement sur votre appareil et ne sont pas envoyées à un serveur externe';
+                document.querySelector('footer p:nth-child(3)').textContent = '© 2023 - Développement National';
+            }
+            
+            // عرض الحقول الإضافية حسب نوع الوثيقة
+            function showDocumentFields(docType) {
+                documentFields.style.display = 'block';
+                dynamicFields.innerHTML = '';
+                
+                let fieldsHTML = '';
+                
+                switch(docType) {
+                    case 'affidavit':
+                        fieldsHTML = `
+                            <div class="form-group">
+                                <label for="affidavitType">نوع التصريح الشرفي</label>
+                                <select id="affidavitType">
+                                    <option value="noWork">عدم العمل</option>
+                                    <option value="noResidence">عدم السكن</option>
+                                    <option value="lostDocument">فقدان وثيقة</option>
+                                    <option value="singleStatus">الحالة العازبة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="affidavitDetails">تفاصيل إضافية</label>
+                                <textarea id="affidavitDetails" placeholder="أدخل التفاصيل الإضافية للتصريح الشرفي"></textarea>
+                            </div>
+                        `;
+                        break;
+                    case 'request':
+                        fieldsHTML = `
+                            <div class="form-group">
+                                <label for="requestType">نوع الطلب</label>
+                                <select id="requestType">
+                                    <option value="administrative">طلب إداري</option>
+                                    <option value="housing">طلب سكن</option>
+                                    <option value="workCertificate">طلب شهادة عمل</option>
+                                    <option value="transfer">طلب تحويل</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="requestRecipient">الجهة الموجه إليها الطلب</label>
+                                <input type="text" id="requestRecipient" placeholder="اسم الجهة">
+                            </div>
+                            <div class="form-group">
+                                <label for="requestDetails">تفاصيل الطلب</label>
+                                <textarea id="requestDetails" placeholder="أدخل تفاصيل الطلب"></textarea>
+                            </div>
+                        `;
+                        break;
+                    case 'rental':
+                        fieldsHTML = `
+                            <div class="form-group">
+                                <label for="landlordName">اسم المؤجر</label>
+                                <input type="text" id="landlordName" placeholder="اسم المؤجر الكامل">
+                            </div>
+                            <div class="form-group">
+                                <label for="tenantName">اسم المكتري</label>
+                                <input type="text" id="tenantName" placeholder="اسم المكتري الكامل">
+                            </div>
+                            <div class="form-group">
+                                <label for="rentalAddress">عنوان العقار</label>
+                                <input type="text" id="rentalAddress" placeholder="عنوان العقار المؤجر">
+                            </div>
+                            <div class="form-group">
+                                <label for="rentalAmount">قيمة الكراء</label>
+                                <input type="text" id="rentalAmount" placeholder="المبلغ بالدينار الجزائري">
+                            </div>
+                            <div class="form-group">
+                                <label for="rentalDuration">مدة الكراء</label>
+                                <input type="text" id="rentalDuration" placeholder="مثال: 12 شهر">
+                            </div>
+                        `;
+                        break;
+                    // يمكن إضافة المزيد من الحقول لأنواع الوثائق الأخرى
+                    default:
+                        fieldsHTML = `<p>لا توجد حقول إضافية مطلوبة لهذا النوع من الوثائق</p>`;
+                }
+                
+                dynamicFields.innerHTML = fieldsHTML;
+            }
+            
+            // توليد معاينة الوثيقة
+            function generateDocumentPreview() {
+                if (!currentDocumentType) {
+                    documentPreview.textContent = currentLanguage === 'ar' 
+                        ? 'يرجى اختيار نوع الوثيقة أولاً' 
+                        : 'Veuillez d\'abord choisir un type de document';
+                    return;
+                }
+                
+                // جمع البيانات الشخصية
+                collectPersonalData();
+                
+                // توليد محتوى الوثيقة حسب النوع والقالب
+                let documentContent = '';
+                
+                switch(currentDocumentType) {
+                    case 'affidavit':
+                        documentContent = generateAffidavitContent();
+                        break;
+                    case 'request':
+                        documentContent = generateRequestContent();
+                        break;
+                    case 'rental':
+                        documentContent = generateRentalContent();
+                        break;
+                    // يمكن إضافة المزيد من أنواع الوثائق
+                    default:
+                        documentContent = currentLanguage === 'ar' 
+                            ? 'نوع الوثيقة غير معروف' 
+                            : 'Type de document inconnu';
+                }
+                
+                documentPreview.innerHTML = documentContent;
+            }
+            
+            // توليد محتوى التصريح الشرفي
+            function generateAffidavitContent() {
+                const affidavitType = document.getElementById('affidavitType').value;
+                const affidavitDetails = document.getElementById('affidavitDetails').value;
+                
+                let typeText = '';
+                switch(affidavitType) {
+                    case 'noWork':
+                        typeText = currentLanguage === 'ar' ? 'عدم العمل' : 'Non-travail';
+                        break;
+                    case 'noResidence':
+                        typeText = currentLanguage === 'ar' ? 'عدم السكن' : 'Non-résidence';
+                        break;
+                    case 'lostDocument':
+                        typeText = currentLanguage === 'ar' ? 'فقدان وثيقة' : 'Perte de document';
+                        break;
+                    case 'singleStatus':
+                        typeText = currentLanguage === 'ar' ? 'الحالة العازبة' : 'Statut de célibataire';
+                        break;
+                }
+                
+                if (currentLanguage === 'ar') {
+                    return `
+                        تصريح شرفي
+                        
+                        أنا الموقع(ة) أدناه:
+                        الاسم واللقب: ${personalData.firstName} ${personalData.lastName}
+                        تاريخ الميلاد: ${personalData.birthDate}
+                        مكان الازدياد: ${personalData.birthPlace}
+                        العنوان: ${personalData.address}
+                        ${personalData.phone ? `رقم الهاتف: ${personalData.phone}` : ''}
+                        
+                        أصرح بشرفي أن:
+                        ${affidavitDetails || `أنا في حالة ${typeText} ولا أملك أي مصدر دخل/سكن/وثيقة/إلخ`}
+                        
+                        وأتعهد بتحمل كافة المسؤوليات القانونية المترتبة على هذا التصريح.
+                        
+                        التاريخ: ${new Date().toLocaleDateString('ar-EG')}
+                        التوقيع: _______________
+                        
+                        ⚠️ تحذير: هذا التصريح غير رسمي ولا يحل محل الوثائق الرسمية.
+                    `;
+                } else {
+                    return `
+                        Déclaration sur l'Honneur
+                        
+                        Je soussigné(e):
+                        Nom et Prénom: ${personalData.firstName} ${personalData.lastName}
+                        Date de naissance: ${personalData.birthDate}
+                        Lieu de naissance: ${personalData.birthPlace}
+                        Adresse: ${personalData.address}
+                        ${personalData.phone ? `Téléphone: ${personalData.phone}` : ''}
+                        
+                        Déclare sur mon honneur que:
+                        ${affidavitDetails || `Je suis en situation de ${typeText} et je ne dispose d'aucune source de revenu/logement/document/etc`}
+                        
+                        Et m'engage à assumer toutes les responsabilités légales découlant de cette déclaration.
+                        
+                        Date: ${new Date().toLocaleDateString('fr-FR')}
+                        Signature: _______________
+                        
+                        ⚠️ Avertissement: Cette déclaration est non officielle et ne remplace pas les documents officiels.
+                    `;
+                }
+            }
+            
+            // توليد محتوى الطلب الخطي
+            function generateRequestContent() {
+                const requestType = document.getElementById('requestType').value;
+                const requestRecipient = document.getElementById('requestRecipient').value;
+                const requestDetails = document.getElementById('requestDetails').value;
+                
+                let typeText = '';
+                switch(requestType) {
+                    case 'administrative':
+                        typeText = currentLanguage === 'ar' ? 'طلب إداري' : 'Demande administrative';
+                        break;
+                    case 'housing':
+                        typeText = currentLanguage === 'ar' ? 'طلب سكن' : 'Demande de logement';
+                        break;
+                    case 'workCertificate':
+                        typeText = currentLanguage === 'ar' ? 'طلب شهادة عمل' : 'Demande de certificat de travail';
+                        break;
+                    case 'transfer':
+                        typeText = currentLanguage === 'ar' ? 'طلب تحويل' : 'Demande de transfert';
+                        break;
+                }
+                
+                if (currentLanguage === 'ar') {
+                    return `
+                        ${typeText}
+                        
+                        إلى: ${requestRecipient || 'الجهة المختصة'}
+                        
+                        الموضوع: ${typeText}
+                        
+                        السيد/ة المسؤول(ة)،
+                        
+                        أتقدم إليكم بهذا الطلب ${typeText} وأرجو منكم التكرم بالموافقة عليه.
+                        
+                        ${requestDetails || `أنا المواطن(ة) ${personalData.firstName} ${personalData.lastName}، أتقدم بطلب ${typeText} لأسباب شخصية/مهنية.`}
+                        
+                        مع خالص الشكر والتقدير،
+                        
+                        ${personalData.firstName} ${personalData.lastName}
+                        ${personalData.address ? `العنوان: ${personalData.address}` : ''}
+                        ${personalData.phone ? `الهاتف: ${personalData.phone}` : ''}
+                        ${personalData.email ? `البريد الإلكتروني: ${personalData.email}` : ''}
+                        
+                        التاريخ: ${new Date().toLocaleDateString('ar-EG')}
+                        التوقيع: _______________
+                        
+                        ⚠️ تحذير: هذا الطلب غير رسمي ولا يحل محل الطلبات الرسمية.
+                    `;
+                } else {
+                    return `
+                        ${typeText}
+                        
+                        À: ${requestRecipient || 'Autorité compétente'}
+                        
+                        Objet: ${typeText}
+                        
+                        Monsieur/Madame le Responsable,
+                        
+                        Je vous présente cette demande de ${typeText} et vous prie de bien vouloir l'approuver.
+                        
+                        ${requestDetails || `Je, soussigné(e) ${personalData.firstName} ${personalData.lastName}, présente une demande de ${typeText} pour des raisons personnelles/professionnelles.`}
+                        
+                        Avec mes remerciements et ma considération,
+                        
+                        ${personalData.firstName} ${personalData.lastName}
+                        ${personalData.address ? `Adresse: ${personalData.address}` : ''}
+                        ${personalData.phone ? `Téléphone: ${personalData.phone}` : ''}
+                        ${personalData.email ? `Email: ${personalData.email}` : ''}
+                        
+                        Date: ${new Date().toLocaleDateString('fr-FR')}
+                        Signature: _______________
+                        
+                        ⚠️ Avertissement: Cette demande est non officielle et ne remplace pas les demandes officielles.
+                    `;
+                }
+            }
+            
+            // توليد محتوى عقد الكراء
+            function generateRentalContent() {
+                const landlordName = document.getElementById('landlordName').value;
+                const tenantName = document.getElementById('tenantName').value;
+                const rentalAddress = document.getElementById('rentalAddress').value;
+                const rentalAmount = document.getElementById('rentalAmount').value;
+                const rentalDuration = document.getElementById('rentalDuration').value;
+                
+                if (currentLanguage === 'ar') {
+                    return `
+                        عقد كراء
+                        
+                        تم الاتفاق في هذا العقد بين:
+                        
+                        الطرف الأول (المؤجر):
+                        الاسم: ${landlordName || 'غير محدد'}
+                        
+                        والطرف الثاني (المكتري):
+                        الاسم: ${tenantName || 'غير محدد'}
+                        ${personalData.address ? `العنوان: ${personalData.address}` : ''}
+                        ${personalData.phone ? `الهاتف: ${personalData.phone}` : ''}
+                        
+                        على كراء العقار الموجود في:
+                        ${rentalAddress || 'غير محدد'}
+                        
+                        بشروط وأحكام如下:
+                        1. مدة الكراء: ${rentalDuration || 'غير محددة'}
+                        2. قيمة الكراء: ${rentalAmount || 'غير محددة'} دينار جزائري شهرياً
+                        3. يدفع الكراء مقدماً في بداية كل شهر
+                        4. يتحمل المكتري مصاريف الصيانة البسيطة
+                        5. يحق للمؤجر فسخ العقد في حالة عدم دفع الكراء
+                        
+                        وقد أقر الطرفان بما جاء في هذا العقد ووقعاه على ذلك.
+                        
+                        توقيع المؤجر: _______________        التاريخ: ${new Date().toLocaleDateString('ar-EG')}
+                        توقيع المكتري: _______________        التاريخ: ${new Date().toLocaleDateString('ar-EG')}
+                        
+                        ⚠️ تحذير: هذا العقد غير رسمي ولا يحل محل العقود الرسمية المسجلة لدى الجهات المختصة.
+                    `;
+                } else {
+                    return `
+                        Contrat de Location
+                        
+                        Accord conclu dans ce contrat entre:
+                        
+                        Première Partie (Propriétaire):
+                        Nom: ${landlordName || 'Non spécifié'}
+                        
+                        et Deuxième Partie (Locataire):
+                        Nom: ${tenantName || 'Non spécifié'}
+                        ${personalData.address ? `Adresse: ${personalData.address}` : ''}
+                        ${personalData.phone ? `Téléphone: ${personalData.phone}` : ''}
+                        
+                        pour la location du bien situé à:
+                        ${rentalAddress || 'Non spécifié'}
+                        
+                        Aux conditions et clauses suivantes:
+                        1. Durée de location: ${rentalDuration || 'Non spécifiée'}
+                        2. Montant du loyer: ${rentalAmount || 'Non spécifié'} dinars algériens par mois
+                        3. Le loyer est payé d'avance au début de chaque mois
+                        4. Le locataire supporte les frais d'entretien mineurs
+                        5. Le propriétaire a le droit de résilier le contrat en cas de non-paiement du loyer
+                        
+                        Les deux parties ont approuvé le contenu de ce contrat et l'ont signé à cet effet.
+                        
+                        Signature du Propriétaire: _______________        Date: ${new Date().toLocaleDateString('fr-FR')}
+                        Signature du Locataire: _______________        Date: ${new Date().toLocaleDateString('fr-FR')}
+                        
+                        ⚠️ Avertissement: Ce contrat est non officiel et ne remplace pas les contrats officiels enregistrés auprès des autorités compétentes.
+                    `;
+                }
+            }
+            
+            // توليد PDF
+            function generatePDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // إضافة محتوى الوثيقة إلى PDF
+                const content = documentPreview.innerText;
+                const lines = doc.splitTextToSize(content, 180);
+                
+                doc.setFontSize(12);
+                doc.text(lines, 10, 10);
+                
+                // حفظ الملف
+                doc.save(`document_${new Date().getTime()}.pdf`);
+            }
+            
+            // توليد مستند Word
+            function generateWord() {
+                const content = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Document</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; }
+                            .warning { color: red; font-weight: bold; }
+                        </style>
+                    </head>
+                    <body>
+                        <pre>${documentPreview.innerText}</pre>
+                    </body>
+                    </html>
+                `;
+                
+                const blob = new Blob([content], { type: 'application/msword' });
+                saveAs(blob, `document_${new Date().getTime()}.doc`);
+            }
+            
+            // حفظ الوثيقة في السجل
+            function saveToHistory() {
+                const documentData = {
+                    id: new Date().getTime(),
+                    type: currentDocumentType,
+                    content: documentPreview.innerText,
+                    date: new Date().toLocaleString(),
+                    template: currentTemplate
+                };
+                
+                documentHistory.push(documentData);
+                localStorage.setItem('documentHistory', JSON.stringify(documentHistory));
+                
+                updateDocumentHistory();
+                
+                alert(currentLanguage === 'ar' ? 'تم حفظ الوثيقة في السجل' : 'Document sauvegardé dans l\'historique');
+            }
+            
+            // تحديث سجل الوثائق
+            function updateDocumentHistory() {
+                documentHistoryEl.innerHTML = '';
+                
+                if (documentHistory.length === 0) {
+                    documentHistoryEl.innerHTML = currentLanguage === 'ar' 
+                        ? '<p>لا توجد وثائق محفوظة</p>' 
+                        : '<p>Aucun document sauvegardé</p>';
+                    return;
+                }
+                
+                documentHistory.forEach(doc => {
+                    const docEl = document.createElement('div');
+                    docEl.className = 'card';
+                    docEl.style.marginBottom = '10px';
+                    
+                    const docTypeText = currentLanguage === 'ar' 
+                        ? getArabicDocType(doc.type) 
+                        : getFrenchDocType(doc.type);
+                    
+                    docEl.innerHTML = `
+                        <h3>${docTypeText}</h3>
+                        <p><small>${doc.date}</small></p>
+                        <pre style="white-space: pre-wrap; max-height: 150px; overflow: auto; background: #f5f5f5; padding: 10px; border-radius: 5px;">${doc.content.substring(0, 200)}...</pre>
+                        <button class="btn view-doc-btn" data-id="${doc.id}" style="margin-top: 10px;">
+                            ${currentLanguage === 'ar' ? 'عرض الوثيقة' : 'Voir le document'}
+                        </button>
+                    `;
+                    
+                    documentHistoryEl.appendChild(docEl);
+                });
+                
+                // إضافة مستمعي الأحداث لأزرار العرض
+                document.querySelectorAll('.view-doc-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const docId = this.getAttribute('data-id');
+                        const doc = documentHistory.find(d => d.id == docId);
+                        
+                        if (doc) {
+                            documentPreview.textContent = doc.content;
+                            
+                            // الانتقال إلى قسم المعاينة
+                            tabs.forEach(t => t.classList.remove('active'));
+                            document.querySelector('.tab[data-tab="preview"]').classList.add('active');
+                            tabContents.forEach(content => content.classList.remove('active'));
+                            document.getElementById('previewTab').classList.add('active');
+                        }
+                    });
+                });
+            }
+            
+            // الحصول على نص نوع الوثيقة بالعربية
+            function getArabicDocType(type) {
+                const types = {
+                    'affidavit': 'تصريح شرفي',
+                    'request': 'طلب خطي',
+                    'rental': 'عقد كراء',
+                    'sale': 'عقد بيع',
+                    'carSale': 'محضر بيع سيارة',
+                    'powerOfAttorney': 'وكالة/تفويض',
+                    'workPermit': 'طلب تصريح عمل',
+                    'schoolRegistration': 'طلب تسجيل مدرسي',
+                    'goodConduct': 'طلب شهادة حسن السيرة',
+                    'partnership': 'عقد شراكة',
+                    'temporaryResidence': 'تصريح سكن مؤقت',
+                    'resignation': 'نموذج استقالة',
+                    'cv': 'سيرة ذاتية'
+                };
+                
+                return types[type] || type;
+            }
+            
+            // الحصول على نص نوع الوثيقة بالفرنسية
+            function getFrenchDocType(type) {
+                const types = {
+                    'affidavit': 'Déclaration sur l\'Honneur',
+                    'request': 'Demande Écrite',
+                    'rental': 'Contrat de Location',
+                    'sale': 'Contrat de Vente',
+                    'carSale': 'Procès-verbal de Vente de Voiture',
+                    'powerOfAttorney': 'Procuration/Mandat',
+                    'workPermit': 'Demande de Permis de Travail',
+                    'schoolRegistration': 'Demande d\'Inscription Scolaire',
+                    'goodConduct': 'Demande de Certificat de Bonne Conduite',
+                    'partnership': 'Contrat de Partenariat',
+                    'temporaryResidence': 'Autorisation de Résidence Temporaire',
+                    'resignation': 'Modèle de Démission',
+                    'cv': 'Curriculum Vitae'
+                };
+                
+                return types[type] || type;
+            }
+            
+            // جمع البيانات الشخصية من النموذج
+            function collectPersonalData() {
+                personalData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    birthDate: document.getElementById('birthDate').value,
+                    birthPlace: document.getElementById('birthPlace').value,
+                    state: document.getElementById('state').value,
+                    municipality: document.getElementById('municipality').value,
+                    district: document.getElementById('district').value,
+                    address: document.getElementById('address').value,
+                    nationality: document.getElementById('nationality').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    profession: document.getElementById('profession').value,
+                    height: document.getElementById('height').value,
+                    notes: document.getElementById('notes').value
+                };
+            }
+            
+            // حفظ البيانات الشخصية في localStorage
+            function savePersonalData() {
+                collectPersonalData();
+                localStorage.setItem('personalData', JSON.stringify(personalData));
+            }
+            
+            // تحميل البيانات الشخصية من localStorage
+            function loadSavedData() {
+                // تحميل البيانات الشخصية
+                const savedPersonalData = localStorage.getItem('personalData');
+                if (savedPersonalData) {
+                    personalData = JSON.parse(savedPersonalData);
+                    
+                    // تعبئة النموذج بالبيانات المحفوظة
+                    document.getElementById('firstName').value = personalData.firstName || '';
+                    document.getElementById('lastName').value = personalData.lastName || '';
+                    document.getElementById('birthDate').value = personalData.birthDate || '';
+                    document.getElementById('birthPlace').value = personalData.birthPlace || '';
+                    document.getElementById('state').value = personalData.state || '';
+                    document.getElementById('municipality').value = personalData.municipality || '';
+                    document.getElementById('district').value = personalData.district || '';
+                    document.getElementById('address').value = personalData.address || '';
+                    document.getElementById('nationality').value = personalData.nationality || 'جزائرية';
+                    document.getElementById('phone').value = personalData.phone || '';
+                    document.getElementById('email').value = personalData.email || '';
+                    document.getElementById('profession').value = personalData.profession || '';
+                    document.getElementById('height').value = personalData.height || '';
+                    document.getElementById('notes').value = personalData.notes || '';
+                }
+                
+                // تحميل سجل الوثائق
+                const savedHistory = localStorage.getItem('documentHistory');
+                if (savedHistory) {
+                    documentHistory = JSON.parse(savedHistory);
+                    updateDocumentHistory();
+                }
+            }
+            
+            // إفراغ البيانات الشخصية
+            function clearPersonalData() {
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+                document.getElementById('birthDate').value = '';
+                document.getElementById('birthPlace').value = '';
+                document.getElementById('state').value = '';
+                document.getElementById('municipality').value = '';
+                document.getElementById('district').value = '';
+                document.getElementById('address').value = '';
+                document.getElementById('nationality').value = 'جزائرية';
+                document.getElementById('phone').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('profession').value = '';
+                document.getElementById('height').value = '';
+                document.getElementById('notes').value = '';
+                
+                personalData = {};
+                localStorage.removeItem('personalData');
+            }
+            
+            // التهيئة الأولية
+            updateLanguage();
+            updateThemeText();
+        });
+    </script>
 </body>
 </html>
